@@ -1,6 +1,12 @@
 while(a == b){
 	z = x;
 	if(c == d) {
+		while(a == b){
+        	z = x;
+        	if(c == d) {
+        		p = u;
+        	}
+        }
 		p = u;
 	}
 }
