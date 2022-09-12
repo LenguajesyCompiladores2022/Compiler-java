@@ -25,8 +25,16 @@ public class LexerTest {
 
 
   @Test
-  public void comment() throws Exception{
-    scan("/*This is a comment*/");
+  public void singleComment() throws Exception{
+    scan("//hola");
+    int token = nextToken();
+    assertThat(nextToken()).isEqualTo(ParserSym.EOF);
+  }
+
+  @Test
+  public void multiLineComment() throws Exception{
+    scan("/*\r\n\rprobando comentario \r\n\n\n*/");
+    int token = nextToken();
     assertThat(nextToken()).isEqualTo(ParserSym.EOF);
   }
 

@@ -1,1 +1,1 @@
-read(base) /* base es una variable */
+scanf(base) /* base es una variable */
