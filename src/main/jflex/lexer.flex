@@ -51,6 +51,7 @@ MAIN				=	"main"
 ELSE				=	"else"
 CORCH_ABRE			=	"["
 CORCH_CIERRA		=	"]"
+IGUAL_IGUAL         =	"=="
 ASIGNACION			=	"="
 PUNTO_COMA			=	";"
 SYS_OUT				=	"printf"
@@ -78,13 +79,12 @@ WHILE               =	"while"
 COMA                =	","
 TEXTO               =	[\"].*[\"]
 DISTINTO            =	"!="
-IGUAL_IGUAL         =	"=="
 MENOR_IGUAL         =	"<="
 MAYOR_IGUAL         =	">="
 MENOR               =	"<"
 MAYOR               =	">"
-PARENTESIS_ABRE     =	"{"
-PARENTESIS_CIERRA   =	"}"
+LLA     =	"{"
+LLC   =	"}"
 CTE_REAL            =	[0]{0,1}[1-9]{0,11}[.][0-9]{0,11}
 
 %%
@@ -131,8 +131,8 @@ CTE_REAL            =	[0]{0,1}[1-9]{0,11}[.][0-9]{0,11}
 {MAYOR_IGUAL}	    {	return symbol(ParserSym.MAYOR_IGUAL, yytext());	}
 {MENOR}			    {	return symbol(ParserSym.MENOR, yytext());			}
 {MAYOR}			    {	return symbol(ParserSym.MAYOR, yytext());			}
-{PARENTESIS_ABRE}	{	return symbol(ParserSym.PARENTESIS_ABRE, yytext());	}
-{PARENTESIS_CIERRA}	{	return symbol(ParserSym.PARENTESIS_CIERRA, yytext());	}
+{LLA}				{	return symbol(ParserSym.LLA, yytext());	}
+{LLC}				{	return symbol(ParserSym.LLC, yytext());	}
 {CTE_REAL}	        {	return symbol(ParserSym.CTE_REAL, yytext());		}
 {DISTINTO}	        {	return symbol(ParserSym.DISTINTO, yytext());		}
 {IGUAL_IGUAL}	    {	return symbol(ParserSym.IGUAL_IGUAL, yytext());		}
