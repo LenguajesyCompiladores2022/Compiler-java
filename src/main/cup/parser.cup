@@ -11,7 +11,7 @@ terminal INCLUDE;
 terminal PUNTO;
 terminal INTEGER;
 terminal FLOAT;
-terminal CHAR;
+terminal STRING;
 terminal MAIN;
 terminal ELSE;
 terminal CORCH_ABRE;
@@ -42,6 +42,7 @@ terminal WHILE;
 terminal COMA;
 terminal TEXTO;
 terminal DISTINTO;
+terminal NEGADO;
 terminal IGUAL_IGUAL;
 terminal MENOR_IGUAL;
 terminal MAYOR_IGUAL;
@@ -50,6 +51,7 @@ terminal MAYOR;
 terminal LLA;
 terminal LLC;
 terminal CTE_REAL;
+terminal INIT;
 
 // Non Terminals
 non terminal sentencia;
@@ -67,23 +69,46 @@ non terminal factor;
 non terminal bloque;
 non terminal programa;
 non terminal seleccion;
+non terminal declaracion;
+non terminal lista;
+non terminal ladoIzquierdo;
+non terminal inicial;
+non terminal printf;
+non terminal scanf;
+non terminal inicializacion;
+non terminal listaDeclaracion;
 
 // Start Symbol Definition
-start with programa;
+start with inicial;
 
 //programa	::= bloque {: System.out.println("REGLA 0 -- Programa"); :};
+inicial		::= 	programa;
+inicial		::=													{: System.out.println("ARCHIVO VACIO"); :};
 programa	::= 	programa sentencia 							{: System.out.println("REGLA 1 -- programa <-- sentencia"); :};
-programa	::= 	sentencia 									{: System.out.println("REGLA 2 -- programa <-- sentencia"); :};
+programa	::= 	sentencia									{: System.out.println("REGLA 2 -- programa <-- sentencia"); :};
 
 sentencia	::= 	asignacion 									{: System.out.println("REGLA 3 -- sentencia <-- asignacion "); :};
+sentencia 	::= 	inicializacion								{: System.out.println("REGLA 5 -- sentencia <-- inicializacion"); :};
 sentencia 	::= 	iteracion 									{: System.out.println("REGLA 4 -- sentencia <-- iteracion"); :};
 sentencia	::= 	seleccion 									{: System.out.println("REGLA 5 -- sentencia <-- seleccion"); :};
+sentencia 	::=		printf										{: System.out.println("REGLA 5 -- sentencia <-- printf"); :};
+sentencia	::=		scanf										{: System.out.println("REGLA 5 -- sentencia <-- scanf"); :};
 
-asignacion	::= 	tipoDato ID ASIGNACION expresion PUNTO_COMA {: System.out.println("REGLA 14 -- asignación con tipo de dato"); :};
-asignacion	::= 	ID ASIGNACION expresion PUNTO_COMA 			{: System.out.println("REGLA 15 -- asignación"); :};
+asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 14 -- asignación con tipo de dato"); :};
+asignacion	::= 	ladoIzquierdo expresion PUNTO_COMA 			{: System.out.println("REGLA 15 -- asignación"); :};
+ladoIzquierdo::=	ladoIzquierdo ID ASIGNACION					{: System.out.println("REGLA 14a -- asignación"); :};
+ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 14b -- asignación"); :};
+
+inicializacion::=   INIT LLA listaDeclaracion LLC PUNTO_COMA	{: System.out.println("REGLA 14b -- inicializacion"); :};
+listaDeclaracion::=	listaDeclaracion declaracion				{: System.out.println("REGLA 15a -- listaDeclaracion <-- listaDeclaracion declaracion ;"); :};
+listaDeclaracion::= declaracion									{: System.out.println("REGLA 15a -- listaDeclaracion <-- declaracion ;"); :};
+declaracion	::=		tipoDato lista PUNTO_COMA					{: System.out.println("REGLA 15a -- declaracion <-- tipoDato lista ;"); :};
+lista		::= 	lista COMA ID								{: System.out.println("REGLA 15b -- lista <-- lista , id"); :};
+lista		::=		ID											{: System.out.println("REGLA 15c -- lista <-- id"); :};
+
 tipoDato	::= 	INTEGER: entero 							{: System.out.println("REGLA 16 -- Integer: " + entero); :};
 tipoDato	::= 	FLOAT: decimal 								{: System.out.println("REGLA 17 -- Float: " + decimal); :};
-tipoDato	::= 	CHAR: caracter 								{: System.out.println("REGLA 18 -- Char: " + caracter); :};
+tipoDato	::= 	STRING: string 								{: System.out.println("REGLA 18 -- string: " + string); :};
 
 iteracion 	::= 	WHILE PA condicion PC LLA programa LLC 		{: System.out.println("REGLA 6 iteracion <-- While"); :};
 
@@ -93,6 +118,8 @@ seleccion 	::= 	IF PA condicion PC LLA programa LLC ELSE LLA programa LLC {: Sys
 condicion 	::= 	condicion AND comparacion 		{: System.out.println("REGLA 9 -- condicion <-- condicion and comparacion"); :};
 condicion 	::= 	condicion OR comparacion 		{: System.out.println("REGLA 10 -- condicion <-- condicion or comparacion"); :};
 condicion	::= 	comparacion 					{: System.out.println("REGLA 11 -- condicion <-- comparacion"); :};
+//condicion	::= 	expresion 						{: System.out.println("REGLA 11 -- condicion <-- expresion"); :};
+//condicion	::= 	NEGADO expresion 				{: System.out.println("REGLA 11 -- condicion <-- !expresion"); :};
 
 comparacion ::= 	expresion comparador expresion 	{: System.out.println("REGLA 12 -- comparacion"); :};
 comparador  ::= 	IGUAL_IGUAL:comp 				{: System.out.println("REGLA 13 -- CMP " + comp); :};
@@ -101,6 +128,10 @@ comparador  ::= 	MAYOR_IGUAL:comp 				{: System.out.println("REGLA 13 -- CMP " +
 comparador  ::= 	MENOR_IGUAL:comp				{: System.out.println("REGLA 13 -- CMP " + comp); :};
 comparador  ::= 	MAYOR:comp						{: System.out.println("REGLA 13 -- CMP " + comp); :};
 comparador  ::= 	MENOR:comp						{: System.out.println("REGLA 13 -- CMP " + comp); :};
+
+printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: System.out.println("REGLA 13 -- printf "); :};
+
+scanf		::=		SYS_IN	PA ID PC PUNTO_COMA {: System.out.println("REGLA 13 -- scanf "); :};
 
 expresion	::= 	expresion OP_SUM termino 		{: System.out.println("REGLA 19 -- +"); :};
 expresion	::= 	expresion OP_RES termino 		{: System.out.println("REGLA 20 -- -"); :};
@@ -112,5 +143,6 @@ termino		::= 	factor 							{: System.out.println("REGLA 24 -- Termino <-- facto
 
 factor		::= 	ID:id  				{: System.out.println("REGLA 25 -- Id: " + id); :};
 factor		::= 	CTE:constant 		{: System.out.println("REGLA 26 -- Constant: " + constant ); :};
-factor		::= 	TEXTO:string 		{: System.out.println("REGLA 27 -- Constant: " + string.toString().length() ); :};
+factor		::= 	TEXTO:string 		{: System.out.println("REGLA 27 -- Constant: " + string ); :};
+factor		::=		CTE_REAL:cteReal	{: System.out.println("REGLA 27 -- Real Constant: " + cteReal ); :};
 factor		::= 	PA expresion PC 	{: System.out.println("REGLA 28 -- Factor <-- (Expression)"); :};
