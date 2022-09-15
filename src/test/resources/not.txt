@@ -5,5 +5,4 @@ c = 2;
 if (!a)
 {
 	a = c;
-    //printf("a no es mas grande que b");
 }

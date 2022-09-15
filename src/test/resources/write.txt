@@ -1,2 +1,6 @@
-printf(“ewr”)  /* “ewr” es una cte string */
-printf(var1)  /* var1 es una variable numérica definida previamente */
+printf("ewr");  /* “ewr” es una cte string */
+printf(var1);  /* var1 es una variable numérica definida previamente */
+
+printf(800.5);
+
+printf(800);

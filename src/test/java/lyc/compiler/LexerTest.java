@@ -39,11 +39,51 @@ public class LexerTest {
   }
 
   @Test
+  public void realConstant() throws Exception{
+    scan(".01");
+    assertThat(nextToken()).isEqualTo(ParserSym.CTE_REAL);
+  }
+
+  @Test
+  public void ifCase() throws Exception{
+    scan("if (a > b && c > b){printf(\"a > b y c > b\");}");
+    assertThat(nextToken()).isEqualTo(ParserSym.IF);
+    assertThat(nextToken()).isEqualTo(ParserSym.PA);
+    assertThat(nextToken()).isEqualTo(ParserSym.ID);
+    assertThat(nextToken()).isEqualTo(ParserSym.MAYOR);
+    assertThat(nextToken()).isEqualTo(ParserSym.ID);
+    assertThat(nextToken()).isEqualTo(ParserSym.AND);
+    assertThat(nextToken()).isEqualTo(ParserSym.ID);
+    assertThat(nextToken()).isEqualTo(ParserSym.MAYOR);
+    assertThat(nextToken()).isEqualTo(ParserSym.ID);
+    assertThat(nextToken()).isEqualTo(ParserSym.PC);
+    assertThat(nextToken()).isEqualTo(ParserSym.LLA);
+    assertThat(nextToken()).isEqualTo(ParserSym.SYS_OUT);
+    assertThat(nextToken()).isEqualTo(ParserSym.PA);
+    assertThat(nextToken()).isEqualTo(ParserSym.TEXTO);
+    assertThat(nextToken()).isEqualTo(ParserSym.PC);
+    assertThat(nextToken()).isEqualTo(ParserSym.PUNTO_COMA);
+    assertThat(nextToken()).isEqualTo(ParserSym.LLC);
+  }
+
+  @Test
   public void invalidStringConstantLength() {
     assertThrows(InvalidLengthException.class, () -> {
       scan("\"%s\"".formatted(getRandomString()));
       nextToken();
     });
+  }
+
+  @Test
+  public void write() throws Exception{
+    scan("printf(\"ewr\");");
+    assertThat(nextToken()).isEqualTo(ParserSym.SYS_OUT);
+  }
+  
+  @Test
+  public void initToken() throws Exception{
+    scan("init");
+    assertThat(nextToken()).isEqualTo(ParserSym.INIT);
   }
 
   @Test
@@ -57,15 +97,15 @@ public class LexerTest {
   @Test
   public void invalidPositiveIntegerConstantValue() {
     assertThrows(InvalidIntegerException.class, () -> {
-      scan("%d".formatted(9223372036854775807L));
-      nextToken();
+      scan("%d".formatted(333000));
+      int token = nextToken();
     });
   }
 
   @Test
   public void invalidNegativeIntegerConstantValue() {
     assertThrows(InvalidIntegerException.class, () -> {
-      scan("%d".formatted(-9223372036854775807L));
+      scan("%d".formatted(-333000));
       nextToken();
     });
   }
@@ -73,7 +113,7 @@ public class LexerTest {
 
   @Test
   public void assignmentWithExpressions() throws Exception {
-    scan("c=d*(e-21)/4");
+    scan("c=d*(e- 21)/4");
     assertThat(nextToken()).isEqualTo(ParserSym.ID);
     assertThat(nextToken()).isEqualTo(ParserSym.ASIGNACION);
     assertThat(nextToken()).isEqualTo(ParserSym.ID);
@@ -91,7 +131,7 @@ public class LexerTest {
   @Test
   public void unknownCharacter() {
     assertThrows(UnknownCharacterException.class, () -> {
-      scan("#");
+      scan("@");
       nextToken();
     });
   }

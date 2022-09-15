@@ -2,6 +2,6 @@ a = 1;
 b = 3;
 while (a > b)
 {
-    printf("a es mas grande que b");
+    //printf("a es mas grande que b");
     a = a + 1;
 }

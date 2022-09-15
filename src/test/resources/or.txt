@@ -4,5 +4,5 @@ c = 2;
 
 if (a > b || c > b)
 {
-    printf("a es mas grande que b o c es mas grande que b");
+    printf("a > b || c > b");
 }

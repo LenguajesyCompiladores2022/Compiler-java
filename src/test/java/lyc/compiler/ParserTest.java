@@ -18,7 +18,16 @@ public class ParserTest {
 
     @Test
     public void assignmentWithExpression() throws Exception {
-        compilationSuccessful("c=d*(e-21)/4;");
+        compilationSuccessful("c=d*(e- 21)/4;");
+    }
+    @Test
+    public void multiAssignmentWithExpression() throws Exception {
+        compilationSuccessful("e = c = a = d + a;");
+    }
+
+    @Test
+    public void multiAssignmentWithoutExpression() throws Exception {
+        compilationSuccessful("a=b=c=d;");
     }
 
     @Test
@@ -67,7 +76,7 @@ public class ParserTest {
     }
 
     @Test
-    void ifStatement() throws Exception {
+    void ifElseStatement() throws Exception {
         compilationSuccessful(readFromFile("if.txt"));
     }
 
