@@ -1,0 +1,8 @@
+do a
+	case a==101
+		b = 100;
+	case a>202
+		a = b;
+	default
+		printf("paso por default");
+enddo

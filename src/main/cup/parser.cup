@@ -52,6 +52,11 @@ terminal LLA;
 terminal LLC;
 terminal CTE_REAL;
 terminal INIT;
+terminal ALL_EQUAL;
+terminal DO;
+terminal CASE;
+terminal DEFAULT;
+terminal ENDDO;
 
 // Non Terminals
 non terminal sentencia;
@@ -77,6 +82,13 @@ non terminal printf;
 non terminal scanf;
 non terminal inicializacion;
 non terminal listaDeclaracion;
+non terminal array;
+non terminal elementos;
+non terminal parametros;
+non terminal allEquals;
+non terminal doCase;
+non terminal bloqueDo;
+non terminal caso;
 
 // Start Symbol Definition
 start with inicial;
@@ -88,61 +100,77 @@ programa	::= 	programa sentencia 							{: System.out.println("REGLA 1 -- progra
 programa	::= 	sentencia									{: System.out.println("REGLA 2 -- programa <-- sentencia"); :};
 
 sentencia	::= 	asignacion 									{: System.out.println("REGLA 3 -- sentencia <-- asignacion "); :};
-sentencia 	::= 	inicializacion								{: System.out.println("REGLA 5 -- sentencia <-- inicializacion"); :};
-sentencia 	::= 	iteracion 									{: System.out.println("REGLA 4 -- sentencia <-- iteracion"); :};
-sentencia	::= 	seleccion 									{: System.out.println("REGLA 5 -- sentencia <-- seleccion"); :};
-sentencia 	::=		printf										{: System.out.println("REGLA 5 -- sentencia <-- printf"); :};
-sentencia	::=		scanf										{: System.out.println("REGLA 5 -- sentencia <-- scanf"); :};
+sentencia 	::= 	inicializacion								{: System.out.println("REGLA 4 -- sentencia <-- inicializacion"); :};
+sentencia 	::= 	iteracion 									{: System.out.println("REGLA 5 -- sentencia <-- iteracion"); :};
+sentencia	::= 	seleccion 									{: System.out.println("REGLA 6 -- sentencia <-- seleccion"); :};
+sentencia 	::=		printf										{: System.out.println("REGLA 7 -- sentencia <-- printf"); :};
+sentencia	::=		scanf										{: System.out.println("REGLA 8 -- sentencia <-- scanf"); :};
+sentencia	::=		allEquals									{: System.out.println("REGLA 9 -- sentencia <-- allEquals");:};
+sentencia	::=		doCase;
 
-asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 14 -- asignación con tipo de dato"); :};
-asignacion	::= 	ladoIzquierdo expresion PUNTO_COMA 			{: System.out.println("REGLA 15 -- asignación"); :};
-ladoIzquierdo::=	ladoIzquierdo ID ASIGNACION					{: System.out.println("REGLA 14a -- asignación"); :};
-ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 14b -- asignación"); :};
+asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
+asignacion	::= 	ladoIzquierdo expresion PUNTO_COMA 			{: System.out.println("REGLA 11 -- asignación"); :};
+ladoIzquierdo::=	ladoIzquierdo ID ASIGNACION					{: System.out.println("REGLA 12 -- asignación"); :};
+ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 13 -- asignación"); :};
 
-inicializacion::=   INIT LLA listaDeclaracion LLC PUNTO_COMA	{: System.out.println("REGLA 14b -- inicializacion"); :};
-listaDeclaracion::=	listaDeclaracion declaracion				{: System.out.println("REGLA 15a -- listaDeclaracion <-- listaDeclaracion declaracion ;"); :};
-listaDeclaracion::= declaracion									{: System.out.println("REGLA 15a -- listaDeclaracion <-- declaracion ;"); :};
-declaracion	::=		tipoDato lista PUNTO_COMA					{: System.out.println("REGLA 15a -- declaracion <-- tipoDato lista ;"); :};
-lista		::= 	lista COMA ID								{: System.out.println("REGLA 15b -- lista <-- lista , id"); :};
-lista		::=		ID											{: System.out.println("REGLA 15c -- lista <-- id"); :};
+inicializacion::=   INIT LLA listaDeclaracion LLC PUNTO_COMA	{: System.out.println("REGLA 14 -- inicializacion"); :};
+listaDeclaracion::=	listaDeclaracion declaracion				{: System.out.println("REGLA 15 -- listaDeclaracion <-- listaDeclaracion declaracion ;"); :};
+listaDeclaracion::= declaracion									{: System.out.println("REGLA 16 -- listaDeclaracion <-- declaracion ;"); :};
+declaracion	::=		tipoDato lista PUNTO_COMA					{: System.out.println("REGLA 17 -- declaracion <-- tipoDato lista ;"); :};
+lista		::= 	lista COMA ID								{: System.out.println("REGLA 18 -- lista <-- lista , id"); :};
+lista		::=		ID											{: System.out.println("REGLA 19 -- lista <-- id"); :};
 
-tipoDato	::= 	INTEGER: entero 							{: System.out.println("REGLA 16 -- Integer: " + entero); :};
-tipoDato	::= 	FLOAT: decimal 								{: System.out.println("REGLA 17 -- Float: " + decimal); :};
-tipoDato	::= 	STRING: string 								{: System.out.println("REGLA 18 -- string: " + string); :};
+tipoDato	::= 	INTEGER: entero 							{: System.out.println("REGLA 20 -- Integer: " + entero); :};
+tipoDato	::= 	FLOAT: decimal 								{: System.out.println("REGLA 21 -- Float: " + decimal); :};
+tipoDato	::= 	STRING: string 								{: System.out.println("REGLA 22 -- string: " + string); :};
 
-iteracion 	::= 	WHILE PA condicion PC LLA programa LLC 		{: System.out.println("REGLA 6 iteracion <-- While"); :};
+iteracion 	::= 	WHILE PA condicion PC LLA programa LLC 		{: System.out.println("REGLA 23 -- iteracion <-- While"); :};
 
-seleccion 	::= 	IF PA condicion PC LLA programa LLC 		{: System.out.println("REGLA 7 seleccion <-- if solo"); :};
-seleccion 	::= 	IF PA condicion PC LLA programa LLC ELSE LLA programa LLC {: System.out.println("REGLA 8 --> if con else"); :};
+seleccion 	::= 	IF PA condicion PC LLA programa LLC 		{: System.out.println("REGLA 24 -- seleccion <-- if solo"); :};
+seleccion 	::= 	IF PA condicion PC LLA programa LLC ELSE LLA programa LLC {: System.out.println("REGLA 25 -- seleccion --> if con else"); :};
 
-condicion 	::= 	condicion AND comparacion 		{: System.out.println("REGLA 9 -- condicion <-- condicion and comparacion"); :};
-condicion 	::= 	condicion OR comparacion 		{: System.out.println("REGLA 10 -- condicion <-- condicion or comparacion"); :};
-condicion	::= 	comparacion 					{: System.out.println("REGLA 11 -- condicion <-- comparacion"); :};
-//condicion	::= 	expresion 						{: System.out.println("REGLA 11 -- condicion <-- expresion"); :};
-//condicion	::= 	NEGADO expresion 				{: System.out.println("REGLA 11 -- condicion <-- !expresion"); :};
+condicion 	::= 	comparacion AND comparacion 	{: System.out.println("REGLA 26 -- condicion <-- condicion and comparacion"); :};
+condicion 	::= 	comparacion OR comparacion 		{: System.out.println("REGLA 27 -- condicion <-- condicion or comparacion"); :};
+condicion	::= 	comparacion 					{: System.out.println("REGLA 28 -- condicion <-- comparacion"); :};
+//condicion	::= 	expresion 						{: System.out.println("REGLA 29 -- condicion <-- expresion"); :};
+condicion 	::=		NEGADO comparacion				{: System.out.println("REGLA 30 -- condicion <-- !comparacion");:};
+condicion	::= 	NEGADO expresion 				{: System.out.println("REGLA 31 -- condicion <-- !expresion"); :};
 
-comparacion ::= 	expresion comparador expresion 	{: System.out.println("REGLA 12 -- comparacion"); :};
-comparador  ::= 	IGUAL_IGUAL:comp 				{: System.out.println("REGLA 13 -- CMP " + comp); :};
-comparador  ::= 	DISTINTO:comp 					{: System.out.println("REGLA 13 -- CMP " + comp); :};
-comparador  ::= 	MAYOR_IGUAL:comp 				{: System.out.println("REGLA 13 -- CMP " + comp); :};
-comparador  ::= 	MENOR_IGUAL:comp				{: System.out.println("REGLA 13 -- CMP " + comp); :};
-comparador  ::= 	MAYOR:comp						{: System.out.println("REGLA 13 -- CMP " + comp); :};
-comparador  ::= 	MENOR:comp						{: System.out.println("REGLA 13 -- CMP " + comp); :};
+comparacion ::= 	expresion comparador expresion 	{: System.out.println("REGLA 32 -- comparacion"); :};
+comparador  ::= 	IGUAL_IGUAL:comp 				{: System.out.println("REGLA 33 -- CMP " + comp); :};
+comparador  ::= 	DISTINTO:comp 					{: System.out.println("REGLA 33 -- CMP " + comp); :};
+comparador  ::= 	MAYOR_IGUAL:comp 				{: System.out.println("REGLA 33 -- CMP " + comp); :};
+comparador  ::= 	MENOR_IGUAL:comp				{: System.out.println("REGLA 33 -- CMP " + comp); :};
+comparador  ::= 	MAYOR:comp						{: System.out.println("REGLA 33 -- CMP " + comp); :};
+comparador  ::= 	MENOR:comp						{: System.out.println("REGLA 33 -- CMP " + comp); :};
 
-printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: System.out.println("REGLA 13 -- printf "); :};
+printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: System.out.println("REGLA 34 -- printf "); :};
 
-scanf		::=		SYS_IN	PA ID PC PUNTO_COMA {: System.out.println("REGLA 13 -- scanf "); :};
+scanf		::=		SYS_IN PA ID PC PUNTO_COMA 		{: System.out.println("REGLA 35 -- scanf "); :};
 
-expresion	::= 	expresion OP_SUM termino 		{: System.out.println("REGLA 19 -- +"); :};
-expresion	::= 	expresion OP_RES termino 		{: System.out.println("REGLA 20 -- -"); :};
-expresion	::= 	termino 						{: System.out.println("REGLA 21 -- expresion <-- Termino"); :};
+allEquals	::=		ALL_EQUAL PA parametros PC PUNTO_COMA {: System.out.println("REGLA 36 -- allEquals "); :};
+parametros	::=		parametros COMA array			{: System.out.println("REGLA 37 -- parametros <-- parametros, array "); :};
+parametros	::=		array							{: System.out.println("REGLA 38 -- parametros <-- array "); :};
+array		::= 	CORCH_ABRE elementos CORCH_CIERRA {: System.out.println("REGLA 39 -- array <-- [elementos] "); :};
+elementos	::=		elementos COMA expresion		{: System.out.println("REGLA 40 -- elementos <-- elementos, expresion "); :};
+elementos	::= 	expresion						{: System.out.println("REGLA 41 -- elementos <-- expresion "); :};
 
-termino		::= 	termino OP_MUL factor 			{: System.out.println("REGLA 22 -- *"); :};
-termino		::= 	termino OP_DIV factor 			{: System.out.println("REGLA 23 -- /"); :};
-termino		::= 	factor 							{: System.out.println("REGLA 24 -- Termino <-- factor"); :};
+doCase		::=		DO ID bloqueDo ENDDO			{: System.out.println("REGLA 42 -- doCase "); :};
+bloqueDo	::=		caso							{: System.out.println("REGLA 43 -- bloqueDo <-- caso "); :};
+bloqueDo	::=		bloqueDo caso					{: System.out.println("REGLA 44 -- bloqueDo <-- bloqueDo caso "); :};
+caso		::=		CASE condicion programa			{: System.out.println("REGLA 45 -- caso <-- CASE condicion programa"); :};
+caso		::=		DEFAULT programa 				{: System.out.println("REGLA 46 -- caso <-- default programa"); :};
 
-factor		::= 	ID:id  				{: System.out.println("REGLA 25 -- Id: " + id); :};
-factor		::= 	CTE:constant 		{: System.out.println("REGLA 26 -- Constant: " + constant ); :};
-factor		::= 	TEXTO:string 		{: System.out.println("REGLA 27 -- Constant: " + string ); :};
-factor		::=		CTE_REAL:cteReal	{: System.out.println("REGLA 27 -- Real Constant: " + cteReal ); :};
-factor		::= 	PA expresion PC 	{: System.out.println("REGLA 28 -- Factor <-- (Expression)"); :};
+expresion	::= 	expresion OP_SUM termino 		{: System.out.println("REGLA 47 -- +"); :};
+expresion	::= 	expresion OP_RES termino 		{: System.out.println("REGLA 48 -- -"); :};
+expresion	::= 	termino 						{: System.out.println("REGLA 49 -- expresion <-- termino"); :};
+
+termino		::= 	termino OP_MUL factor 			{: System.out.println("REGLA 50 -- *"); :};
+termino		::= 	termino OP_DIV factor 			{: System.out.println("REGLA 51 -- /"); :};
+termino		::= 	factor 							{: System.out.println("REGLA 52 -- Termino <-- factor"); :};
+
+factor		::= 	ID:id  							{: System.out.println("REGLA 53 -- Id: " + id); :};
+factor		::= 	CTE:constant 					{: System.out.println("REGLA 54 -- constante entera: " + constant ); :};
+factor		::= 	TEXTO:string 					{: System.out.println("REGLA 55 -- constante TEXTO: " + string ); :};
+factor		::=		CTE_REAL:cteReal				{: System.out.println("REGLA 56 -- constante real: " + cteReal ); :};
+factor		::= 	PA expresion PC 				{: System.out.println("REGLA 57 -- Factor <-- (expresion)"); :};

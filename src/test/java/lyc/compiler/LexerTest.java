@@ -85,6 +85,17 @@ public class LexerTest {
     scan("init");
     assertThat(nextToken()).isEqualTo(ParserSym.INIT);
   }
+  @Test
+  public void allEqualToken() throws Exception{
+    scan("AllEqual");
+    assertThat(nextToken()).isEqualTo(ParserSym.ALL_EQUAL);
+  }
+
+  @Test
+  public void doToken() throws Exception{
+    scan("do");
+    assertThat(nextToken()).isEqualTo(ParserSym.DO);
+  }
 
   @Test
   public void invalidIdLength() {
@@ -110,6 +121,13 @@ public class LexerTest {
     });
   }
 
+  @Test
+  public void invalidPositiveFloatConstantValue() {
+    assertThrows(InvalidIntegerException.class, () -> {
+      scan("1000.1234566");
+      nextToken();
+    });
+  }
 
   @Test
   public void assignmentWithExpressions() throws Exception {

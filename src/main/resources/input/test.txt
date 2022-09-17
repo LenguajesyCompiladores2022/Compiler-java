@@ -1,8 +1,8 @@
 while(a == b){
-	z = x;
+	z = 100;
 	if(c == d) {
 		while(a == b){
-        	z = x;
+        	z = "hola probando";
         	if(c == d) {
         		p = u;
         	}
@@ -10,3 +10,7 @@ while(a == b){
 		p = u;
 	}
 }
+
+printf(5);
+
+AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );

@@ -85,6 +85,15 @@ public class ParserTest {
         compilationSuccessful(readFromFile("while.txt"));
     }
 
+    @Test
+    void allEqual() throws Exception {
+        compilationSuccessful("AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );");
+    }
+
+    @Test
+    void doCase() throws Exception {
+        compilationSuccessful(readFromFile("doCase.txt"));
+    }
 
     private void compilationSuccessful(String input) throws Exception {
         assertThat(scan(input).sym).isEqualTo(ParserSym.EOF);

@@ -3,7 +3,7 @@ package lyc.compiler;
 import java_cup.runtime.Symbol;
 import lyc.compiler.ParserSym;
 import lyc.compiler.constants.Constants;
-import lyc.compiler.model.*;
+import lyc.compiler.model.*;import lyc.compiler.symbolTable.SymbolTableGenerator;
 import java.util.Scanner;
 
 %%
@@ -22,22 +22,39 @@ import java.util.Scanner;
 
 %{
 	private Symbol symbol(int type) {
-			return new Symbol(type, yyline, yycolumn);
-		}
-		private Symbol symbol(int type, Object value) {
-			return new Symbol(type, yyline, yycolumn, value);
-		}
-		private boolean esLongitudIDValida() {
-			return yylength() <= Constants.MAX_ID_LENGTH;
-		}
-		private boolean esLongitudStringValida() {
-			return yylength() <= Constants.MAX_STRING_LITERAL_LENGTH;
-		}
+		return new Symbol(type, yyline, yycolumn);
+	}
+	private Symbol symbol(int type, Object value) {
+		return new Symbol(type, yyline, yycolumn, value);
+	}
+	private boolean esLongitudIDValida() {
+		return yylength() <= Constants.MAX_ID_LENGTH;
+	}
+	private boolean esLongitudStringValida() {
+		return yylength() <= Constants.MAX_STRING_LITERAL_LENGTH;
+	}
 
-		private boolean esRangoCteEnteraValido(){
-			int cteEntera = Integer.parseInt(yytext());
-			return cteEntera >= Constants.MIN_INTEGER_CONSTANT && cteEntera <= Constants.MAX_INTEGER_CONSTANT;
+	private boolean esRangoCteEnteraValido(){
+		int cteEntera = Integer.parseInt(yytext());
+		return cteEntera >= Constants.MIN_INTEGER_CONSTANT && cteEntera <= Constants.MAX_INTEGER_CONSTANT;
+	}
+
+	private boolean esRangoCteFloatValido(){
+		String[] partesCteFloat = yytext().split("\\.");
+		if(partesCteFloat[0].isEmpty()) {
+			partesCteFloat[0] = "0";
 		}
+		int parteEntera = Integer.parseInt(partesCteFloat[0]);
+
+		if(parteEntera < Constants.MIN_INTEGER_CONSTANT || parteEntera > Constants.MAX_INTEGER_CONSTANT) {
+			return false;
+		}
+		return partesCteFloat[1].length() <= Constants.MAX_DECIMAL_PRECISION;
+	}
+
+	private void guardarToken(boolean esCte) {
+		SymbolTableGenerator.getInstance().addToken((esCte ? "_" : "") + yytext());
+	}
 %}
 
 LineTerminator 		= 	\r|\n|\r\n
@@ -75,7 +92,14 @@ CUALQUIER_CARACTER 	= 	[^\r\n]
 COMENTARIO_SINGLE   =   "//" {CUALQUIER_CARACTER}* {SALTO_LINEA}?
 OP_RES		        =	"-"
 CTE		            =	("+"|"-")? ("0"|([1-9]{DIGITO}*))
+ALL_EQUAL			=	"AllEqual"
+DO					=	"do"
+CASE				=	"case"
+DEFAULT				=	"default"
+ENDDO				=	"enddo"
+
 ID			        =	{LETRA}({LETRA}|{DIGITO})*
+
 
 OP_SUM		        =	"+"
 OP_MUL              =	"*"
@@ -129,20 +153,33 @@ CTE_REAL            =	{CTE}? {PUNTO} {DIGITO}*//[0]{0,1}[1-9]{0,11}[.][0-9]{0,11
 {CTE}			    {
       					if(!esRangoCteEnteraValido())
       						throw new InvalidIntegerException(yytext() + " esta fuera de rango.");
+						guardarToken(true);
       					return symbol(ParserSym.CTE, yytext());
+
 	  				}
-{CTE_REAL}	        {	return symbol(ParserSym.CTE_REAL, yytext());	}
+{CTE_REAL}	        {
+      					if(!esRangoCteFloatValido())
+      						throw new InvalidIntegerException(yytext() + " esta fuera de rango.");
+      					guardarToken(false);
+      					return symbol(ParserSym.CTE_REAL, yytext());
+	  				}
 {TEXTO}			    {
       					if(!esLongitudStringValida())
       						throw new InvalidLengthException("\"" + yytext() + "\""+ " excede el maximo permitido");
+						guardarToken(false);
 						return symbol(ParserSym.TEXTO, yytext());
 	  				}
+{ALL_EQUAL}			{	return symbol(ParserSym.ALL_EQUAL, yytext());	}
+{DO}				{	return symbol(ParserSym.DO, yytext());	}
+{CASE}				{	return symbol(ParserSym.CASE, yytext());	}
+{DEFAULT}			{	return symbol(ParserSym.DEFAULT, yytext());	}
+{ENDDO}				{	return symbol(ParserSym.ENDDO, yytext());	}
 {ID}			    {
       					if(!esLongitudIDValida())
       						throw new InvalidLengthException("\"" + yytext() + "\""+ " excede el maximo permitido");
+		  				guardarToken(false);
 		  				return symbol(ParserSym.ID, yytext());
 	  				}
-
 {MENOR_IGUAL}	    {	return symbol(ParserSym.MENOR_IGUAL, yytext());	}
 {MAYOR_IGUAL}	    {	return symbol(ParserSym.MAYOR_IGUAL, yytext());	}
 {MENOR}			    {	return symbol(ParserSym.MENOR, yytext());			}
@@ -157,6 +194,7 @@ CTE_REAL            =	{CTE}? {PUNTO} {DIGITO}*//[0]{0,1}[1-9]{0,11}[.][0-9]{0,11
 {OP_DIV}			{	return symbol(ParserSym.OP_DIV, yytext());		}
 {PA}				{	return symbol(ParserSym.PA, yytext());			}
 {PC}				{	return symbol(ParserSym.PC, yytext());			}
+
 "\n"				{}
 "\t"				{}
 "\n\t"				{}
