@@ -7,7 +7,10 @@ public final class Constants {
     public static final int MAX_STRING_LITERAL_LENGTH = 40;
     public static final int MAX_INTEGER_CONSTANT = 32767;
     public static final int MIN_INTEGER_CONSTANT = -32768;
-    public static final int MAX_DECIMAL_PRECISION = 6;
+
+    public static final double MIN_FLOAT_CONSTANT = 1.2E-38;
+
+    public static final double MAX_FLOAT_CONSTANT = 1.2E+38;
     private Constants(){}
 
 }

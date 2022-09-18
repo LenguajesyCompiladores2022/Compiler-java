@@ -1,5 +1,5 @@
 init {
-    float a1, b1;
+    float a1, b1 = 99.9;
     int variable1;
     string p1, p2, p3;
 };

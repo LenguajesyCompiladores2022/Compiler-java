@@ -1,4 +1,18 @@
-while(a == b){
+init {
+    float a1, b1 = 99.9;
+    float c = 99.;
+    float d;
+    float minFloat, maxFloat;
+    int i,j;
+    string p1, p2, p3 = "@sdADaSjfla%dfg";
+};
+
+i = j = 0;
+
+printf("Ingrese un valor para la variable d: ");
+scanf(d);
+
+while(i == j){
 	z = 100;
 	if(c == d) {
 		while(a == b){
@@ -6,11 +20,77 @@ while(a == b){
         	if(c == d) {
         		p = u;
         	}
+        	else {
+        		printf("caso else");
+        	}
         }
-		p = u;
+		j = j + 1;
+	}else{
+		d = d + 1.0;
 	}
 }
 
 printf(5);
 
 AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
+
+//hola
+
+/*
+
+probando comentario multilinea
+
+
+*/
+
+if (a > b && c > b)
+{
+	printf("a > b y c > b");
+}
+else
+{
+	c=d*(e- 21)/4;
+}
+
+if (a > b || c > b)
+{
+    printf("a > b || c > b");
+}
+
+do var1
+	case var1 <= 5
+		printf("Menor igual que 5");
+	case var1 <= 20
+		printf("Menor igual que 20");
+	default
+		printf("No se detecto");
+enddo
+
+/*
+if (a == b)
+{
+	variable = @; //DEBERIA FALLAR PORQUE NUESTRO LENGUAJE NO RECONOCE EL SIMBOLO @
+}
+*/
+
+//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE FLOAT
+//minFloat = 0.000000000000000000000000000000000000001;
+
+//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE FLOAT
+//maxFloat = 1000000000000000000000000000000000000001.0;
+
+//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE STRING
+//variableString = "Hola roberto, te estamos llamando, queremos jugar";
+
+//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE ENTERO POSITIVO
+//failPositiveInteger = 333000;
+
+//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE ENTERO NEGATIVO
+//failNegativeInteger = -333000;
+
+//DEBERIA FALLAR PORQUE SE EXCEDE EL LARGO MAXIMO PARA LOS ID'S
+/*
+init {
+	float abcdefghijklmnopqrstuvwxyzabcdefghij;
+}
+*/

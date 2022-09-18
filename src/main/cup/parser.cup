@@ -116,7 +116,8 @@ ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 13 -- asignac
 inicializacion::=   INIT LLA listaDeclaracion LLC PUNTO_COMA	{: System.out.println("REGLA 14 -- inicializacion"); :};
 listaDeclaracion::=	listaDeclaracion declaracion				{: System.out.println("REGLA 15 -- listaDeclaracion <-- listaDeclaracion declaracion ;"); :};
 listaDeclaracion::= declaracion									{: System.out.println("REGLA 16 -- listaDeclaracion <-- declaracion ;"); :};
-declaracion	::=		tipoDato lista PUNTO_COMA					{: System.out.println("REGLA 17 -- declaracion <-- tipoDato lista ;"); :};
+declaracion	::=		tipoDato lista ASIGNACION expresion PUNTO_COMA{: System.out.println("REGLA 17 -- declaracion <-- tipoDato lista ;"); :};
+declaracion	::=		tipoDato lista PUNTO_COMA					{: System.out.println("REGLA 17bis -- declaracion <-- tipoDato lista ;"); :};
 lista		::= 	lista COMA ID								{: System.out.println("REGLA 18 -- lista <-- lista , id"); :};
 lista		::=		ID											{: System.out.println("REGLA 19 -- lista <-- id"); :};
 

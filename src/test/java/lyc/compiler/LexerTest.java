@@ -122,9 +122,17 @@ public class LexerTest {
   }
 
   @Test
-  public void invalidPositiveFloatConstantValue() {
+  public void invalidMinFloatConstantValue() {
     assertThrows(InvalidIntegerException.class, () -> {
-      scan("1000.1234566");
+      scan("0.000000000000000000000000000000000000001");
+      nextToken();
+    });
+  }
+
+  @Test
+  public void invalidMaxFloatConstantValue() {
+    assertThrows(InvalidIntegerException.class, () -> {
+      scan("1000000000000000000000000000000000000001.0");
       nextToken();
     });
   }

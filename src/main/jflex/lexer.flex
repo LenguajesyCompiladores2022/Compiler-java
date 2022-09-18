@@ -40,16 +40,8 @@ import java.util.Scanner;
 	}
 
 	private boolean esRangoCteFloatValido(){
-		String[] partesCteFloat = yytext().split("\\.");
-		if(partesCteFloat[0].isEmpty()) {
-			partesCteFloat[0] = "0";
-		}
-		int parteEntera = Integer.parseInt(partesCteFloat[0]);
-
-		if(parteEntera < Constants.MIN_INTEGER_CONSTANT || parteEntera > Constants.MAX_INTEGER_CONSTANT) {
-			return false;
-		}
-		return partesCteFloat[1].length() <= Constants.MAX_DECIMAL_PRECISION;
+		double cteFloat = Math.abs(Double.parseDouble(yytext()));
+		return cteFloat >= Constants.MIN_FLOAT_CONSTANT && cteFloat <= Constants.MAX_FLOAT_CONSTANT;
 	}
 
 	private void guardarToken(boolean esCte) {
