@@ -1,10 +1,9 @@
 package lyc.compiler;
 
 import java_cup.runtime.*;
-import lyc.compiler.files.IntermediateCodeGenerator;
-import lyc.compiler.files.TreeIntermediateCode;
 import lyc.compiler.constants.Pointers;
-import lyc.compiler.files.AllEquals;
+import lyc.compiler.files.*;
+import lyc.compiler.symbolTable.SymbolTableGenerator;
 
 class Parser;
 
@@ -12,6 +11,10 @@ parser code{:
 	private TreeIntermediateCode intermediateCode = new TreeIntermediateCode();
 	private int indice = 0;
 	private AllEquals allEquals = new AllEquals();
+	private DoCase doCase = new DoCase(this.intermediateCode);
+	private int cont = 0;
+	private String tipoDato;
+	private SymbolTableGenerator symbolTable = SymbolTableGenerator.getInstance();
 :}
 // Terminals
 terminal NUMERAL;
@@ -97,24 +100,25 @@ non terminal allEquals;
 non terminal doCase;
 non terminal bloqueDo;
 non terminal caso;
+non terminal ifHeader;
 
 // Start Symbol Definition
 start with inicial;
 
 //programa	::= bloque {: System.out.println("REGLA 0 -- Programa"); :};
-inicial		::= 	programa									{:/*intermediateCode.asignar(Pointers.Iptr,Pointers.Pptr);*/ IntermediateCodeGenerator.getInstance().setIntermediateCode(intermediateCode);:};
+inicial		::= 	{: intermediateCode.asignarNULL(Pointers.Pptr); :} programa	{:/*intermediateCode.asignar(Pointers.Iptr,Pointers.Pptr);*/ IntermediateCodeGenerator.getInstance().setIntermediateCode(intermediateCode);:};
 inicial		::=													;
-programa	::= 	programa sentencia 							{: System.out.println("REGLA 1 -- programa <-- sentencia"); :};
-programa	::= 	sentencia									{:intermediateCode.asignar(Pointers.Pptr,Pointers.Sptr); System.out.println("REGLA 2 -- programa <-- sentencia"); :};
+programa	::= 	programa sentencia 							{: intermediateCode.crearNodo(Pointers.Pptr,"prog",Pointers.Pptr,Pointers.Sptr); /*doCase.apilarPrograma(); cont++;*/ System.out.println("REGLA 1 -- programa <-- sentencia"); :};
+programa	::= 	sentencia									{: intermediateCode.asignar(Pointers.Pptr,Pointers.Sptr); /*doCase.apilarCont(cont); cont = 1; doCase.apilarPrograma();*/ System.out.println("REGLA 2 -- programa <-- sentencia"); :};
 
 sentencia	::= 	asignacion 									{: intermediateCode.asignar(Pointers.Sptr,Pointers.Aptr); System.out.println("REGLA 3 -- sentencia <-- asignacion "); :};
 sentencia 	::= 	inicializacion								{: System.out.println("REGLA 4 -- sentencia <-- inicializacion"); :};
 sentencia 	::= 	iteracion 									{: intermediateCode.asignar(Pointers.Sptr,Pointers.Iptr); System.out.println("REGLA 5 -- sentencia <-- iteracion"); :};
 sentencia	::= 	seleccion									{: intermediateCode.asignar(Pointers.Sptr,Pointers.SELptr); System.out.println("REGLA 6 -- sentencia <-- seleccion"); :};
-sentencia 	::=		printf										{: System.out.println("REGLA 7 -- sentencia <-- printf"); :};
-sentencia	::=		scanf										{: System.out.println("REGLA 8 -- sentencia <-- scanf"); :};
+sentencia 	::=		printf										{: intermediateCode.asignar(Pointers.Sptr,"READptr"); System.out.println("REGLA 7 -- sentencia <-- printf"); :};
+sentencia	::=		scanf										{: intermediateCode.asignar(Pointers.Sptr,"WRITEptr"); System.out.println("REGLA 8 -- sentencia <-- scanf"); :};
 sentencia	::=		allEquals									{: intermediateCode.asignar(Pointers.Sptr,Pointers.AEptr); System.out.println("REGLA 9 -- sentencia <-- allEquals");:};
-sentencia	::=		doCase;
+sentencia	::=		doCase										{: intermediateCode.asignar(Pointers.Sptr,"DOCASEptr");:};
 
 asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
 asignacion	::= 	ID:id ASIGNACION expresion PUNTO_COMA 		{: intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr); System.out.println("REGLA 11 -- asignación"); :};
@@ -125,19 +129,20 @@ asignacion	::= 	ID:id ASIGNACION allEquals PUNTO_COMA 		{: intermediateCode.crea
 inicializacion::=   INIT LLA listaDeclaracion LLC PUNTO_COMA	{: System.out.println("REGLA 14 -- inicializacion"); :};
 listaDeclaracion::=	listaDeclaracion declaracion				{: System.out.println("REGLA 15 -- listaDeclaracion <-- listaDeclaracion declaracion ;"); :};
 listaDeclaracion::= declaracion									{: System.out.println("REGLA 16 -- listaDeclaracion <-- declaracion ;"); :};
-declaracion	::=		tipoDato lista ASIGNACION expresion PUNTO_COMA{: System.out.println("REGLA 17 -- declaracion <-- tipoDato lista ;"); :};
+//declaracion	::=		tipoDato lista ASIGNACION expresion PUNTO_COMA	{: System.out.println("REGLA 17 -- declaracion <-- tipoDato lista ;"); :};
 declaracion	::=		tipoDato lista PUNTO_COMA					{: System.out.println("REGLA 17bis -- declaracion <-- tipoDato lista ;"); :};
-lista		::= 	lista COMA ID								{: System.out.println("REGLA 18 -- lista <-- lista , id"); :};
-lista		::=		ID											{: System.out.println("REGLA 19 -- lista <-- id"); :};
+lista		::= 	lista COMA ID:id							{: symbolTable.addDataType(id.toString(),tipoDato);System.out.println("REGLA 18 -- lista <-- lista , id"); :};
+lista		::=		ID:id										{: symbolTable.addDataType(id.toString(),tipoDato); System.out.println("REGLA 19 -- lista <-- id"); :};
 
-tipoDato	::= 	INTEGER: entero 							{: System.out.println("REGLA 20 -- Integer: " + entero); :};
-tipoDato	::= 	FLOAT: decimal 								{: System.out.println("REGLA 21 -- Float: " + decimal); :};
-tipoDato	::= 	STRING: string 								{: System.out.println("REGLA 22 -- string: " + string); :};
+tipoDato	::= 	INTEGER: entero 							{: tipoDato = entero.toString(); System.out.println("REGLA 20 -- Integer: " + entero); :};
+tipoDato	::= 	FLOAT: decimal 								{: tipoDato = decimal.toString(); System.out.println("REGLA 21 -- Float: " + decimal); :};
+tipoDato	::= 	STRING: string 								{: tipoDato = string.toString(); System.out.println("REGLA 22 -- string: " + string); :};
 
-iteracion 	::= 	WHILE:_while PA condicion PC LLA programa LLC {: intermediateCode.crearNodo(Pointers.Iptr,_while.toString(),Pointers.CONDptr,Pointers.Pptr); System.out.println("REGLA 23 -- iteracion <-- While"); :};
+iteracion 	::= 	WHILE:_while {: intermediateCode.preSentenciaControl(); :} PA condicion {: intermediateCode.apilarCondicion(Pointers.CONDptr); :} PC LLA programa LLC {: intermediateCode.postSentenciaControl(_while.toString()); System.out.println("REGLA 23 -- iteracion <-- While"); :};
 
-seleccion 	::= 	IF:_if PA condicion PC LLA programa LLC 	{: intermediateCode.crearNodo(Pointers.SELptr,_if.toString(),Pointers.CONDptr,Pointers.Pptr); System.out.println("REGLA 24 -- seleccion <-- if solo"); :};
-seleccion 	::= 	IF:_if PA condicion PC LLA programa LLC {: intermediateCode.apilarNodo(Pointers.Pptr); :} ELSE LLA programa LLC {: intermediateCode.desapilarNodo(Pointers.AUXptr); intermediateCode.crearNodo(Pointers.SELptr,"cuerpo",Pointers.AUXptr,Pointers.Pptr); intermediateCode.crearNodo(Pointers.SELptr,_if.toString(),Pointers.CONDptr,Pointers.SELptr); System.out.println("REGLA 25 -- seleccion --> if con else"); :};
+ifHeader	::= 	IF:_if {: intermediateCode.preSentenciaControl(); :}PA condicion {: intermediateCode.apilarCondicion(Pointers.CONDptr); :} PC;
+seleccion	::=		ifHeader LLA programa LLC {: intermediateCode.postSentenciaControl("if"); System.out.println("REGLA 24 -- seleccion <-- if solo"); :};
+seleccion	::= 	ifHeader LLA programa LLC {: intermediateCode.apilarNodo(Pointers.Pptr); :}ELSE LLA programa LLC {: intermediateCode.desapilarNodo(Pointers.AUXptr); intermediateCode.crearNodo("CUERPOptr","cuerpo",Pointers.AUXptr,Pointers.Pptr); intermediateCode.asignar(Pointers.Pptr,"CUERPOptr"); intermediateCode.postSentenciaControl("if"); System.out.println("REGLA 25 -- seleccion --> if con else"); :};
 
 condicion 	::= 	comparacion {: intermediateCode.apilarNodo(Pointers.COMPptr); :} AND:op comparacion {: intermediateCode.desapilarNodo(Pointers.CONDptr); intermediateCode.crearNodo(Pointers.CONDptr,op.toString(),Pointers.CONDptr,Pointers.COMPptr); System.out.println("REGLA 26 -- condicion <-- condicion and comparacion"); :};
 condicion 	::= 	comparacion {: intermediateCode.apilarNodo(Pointers.COMPptr); :} OR:op comparacion  {: intermediateCode.desapilarNodo(Pointers.CONDptr); intermediateCode.crearNodo(Pointers.CONDptr,op.toString(),Pointers.CONDptr,Pointers.COMPptr); System.out.println("REGLA 27 -- condicion <-- condicion or comparacion"); :};
@@ -154,9 +159,9 @@ comparador  ::= 	MENOR_IGUAL:comp				{: intermediateCode.apilar(comp.toString())
 comparador  ::= 	MAYOR:comp						{: intermediateCode.apilar(comp.toString()); System.out.println("REGLA 33 -- CMP " + comp); :};
 comparador  ::= 	MENOR:comp						{: intermediateCode.apilar(comp.toString()); System.out.println("REGLA 33 -- CMP " + comp); :};
 
-printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: System.out.println("REGLA 34 -- printf "); :};
+printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: intermediateCode.crearNodo("READptr","READ",Pointers.Fptr,null); System.out.println("REGLA 34 -- printf "); :};
 
-scanf		::=		SYS_IN PA ID PC PUNTO_COMA 		{: System.out.println("REGLA 35 -- scanf "); :};
+scanf		::=		SYS_IN PA ID:id PC PUNTO_COMA 	{: intermediateCode.crearHoja("IDptr",id.toString()); intermediateCode.crearNodo("WRITEptr","WRITE","IDptr",null); System.out.println("REGLA 35 -- scanf "); :};
 
 allEquals	::=		ALL_EQUAL PA parametros PC PUNTO_COMA {: allEquals.crearArbol(intermediateCode); System.out.println("REGLA 36 -- allEquals "); :};
 parametros	::=		parametros COMA array			{: allEquals.incrementarCantArrays(); System.out.println("REGLA 37 -- parametros <-- parametros, array "); :};
@@ -165,11 +170,11 @@ array		::= 	CORCH_ABRE elementos CORCH_CIERRA {: System.out.println("REGLA 39 --
 elementos	::=		elementos COMA expresion		{: allEquals.insertar(intermediateCode.obtenerNodo(Pointers.Eptr)); System.out.println("REGLA 40 -- elementos <-- elementos, expresion "); :};
 elementos	::= 	expresion						{: allEquals.insertar(intermediateCode.obtenerNodo(Pointers.Eptr)); System.out.println("REGLA 41 -- elementos <-- expresion "); :};
 
-doCase		::=		DO ID bloqueDo ENDDO			{: System.out.println("REGLA 42 -- doCase "); :};
+doCase		::=		DO ID {: /*guardarId();*/ :}bloqueDo ENDDO			{: doCase.crearArbol(); System.out.println("REGLA 42 -- doCase "); :};
 bloqueDo	::=		caso							{: System.out.println("REGLA 43 -- bloqueDo <-- caso "); :};
 bloqueDo	::=		bloqueDo caso					{: System.out.println("REGLA 44 -- bloqueDo <-- bloqueDo caso "); :};
-caso		::=		CASE condicion programa			{: System.out.println("REGLA 45 -- caso <-- CASE condicion programa"); :};
-caso		::=		DEFAULT programa 				{: System.out.println("REGLA 46 -- caso <-- default programa"); :};
+caso		::=		CASE condicion {: doCase.apilarCondicion(); :} programa {: System.out.println("REGLA 45 -- caso <-- CASE condicion programa"); :};
+caso		::=		DEFAULT programa 				{: doCase.apilarCont(cont); doCase.defaultCase(); System.out.println("REGLA 46 -- caso <-- default programa"); :};
 
 expresion	::= 	expresion {:intermediateCode.apilarNodo(Pointers.Eptr);:}OP_SUM:op termino 	{: intermediateCode.desapilarNodo(Pointers.Eptr); intermediateCode.crearNodo(Pointers.Eptr,op.toString(),Pointers.Eptr,Pointers.Tptr); System.out.println("REGLA 47 -- +"); :};
 expresion	::= 	expresion {:intermediateCode.apilarNodo(Pointers.Eptr);:}OP_RES:op termino 	{: intermediateCode.desapilarNodo(Pointers.Eptr); intermediateCode.crearNodo(Pointers.Eptr,op.toString(),Pointers.Eptr,Pointers.Tptr); System.out.println("REGLA 48 -- -"); :};
