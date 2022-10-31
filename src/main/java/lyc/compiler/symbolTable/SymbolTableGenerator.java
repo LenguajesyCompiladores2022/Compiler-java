@@ -34,4 +34,13 @@ public class SymbolTableGenerator implements FileGenerator {
             this.symbols.put(token,new SymbolTableData());
         }
     }
+
+    public void addDataType(String id,String dataType) throws Exception {
+        SymbolTableData data = this.symbols.get(id);
+
+        if(data.getType() != null)
+            throw new Exception("variable " + "\"" + id + "\"" + " ya declarada");
+
+        data.setType(dataType);
+    }
 }

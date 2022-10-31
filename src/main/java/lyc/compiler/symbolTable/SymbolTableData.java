@@ -6,9 +6,9 @@ public class SymbolTableData {
 	private String length;
 
 	public SymbolTableData(){
-		this.type = "";
-		this.value = "";
-		this.length = "";
+		this.type = null;
+		this.value = null;
+		this.length = null;
 	}
 
 	@Override
