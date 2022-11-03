@@ -44,8 +44,12 @@ import java.util.Scanner;
 		return cteFloat >= Constants.MIN_FLOAT_CONSTANT && cteFloat <= Constants.MAX_FLOAT_CONSTANT;
 	}
 
-	private void guardarToken(boolean esCte) {
-		SymbolTableGenerator.getInstance().addToken((esCte ? "_" : "") + yytext());
+	private void guardarToken() {
+		SymbolTableGenerator.getInstance().addToken(yytext());
+	}
+
+	private void guardarCTE(String dataType){
+	  	SymbolTableGenerator.getInstance().addToken("_" + yytext(),dataType);
 	}
 %}
 
@@ -145,20 +149,21 @@ CTE_REAL            =	{CTE}? {PUNTO} {DIGITO}*//[0]{0,1}[1-9]{0,11}[.][0-9]{0,11
 {CTE}			    {
       					if(!esRangoCteEnteraValido())
       						throw new InvalidIntegerException(yytext() + " esta fuera de rango.");
-						guardarToken(true);
+						guardarCTE("int");
+
       					return symbol(ParserSym.CTE, yytext());
 
 	  				}
 {CTE_REAL}	        {
       					if(!esRangoCteFloatValido())
       						throw new InvalidIntegerException(yytext() + " esta fuera de rango.");
-      					guardarToken(false);
+      					guardarCTE("float");
       					return symbol(ParserSym.CTE_REAL, yytext());
 	  				}
 {TEXTO}			    {
       					if(!esLongitudStringValida())
       						throw new InvalidLengthException("\"" + yytext() + "\""+ " excede el maximo permitido");
-						guardarToken(false);
+						guardarCTE("string");
 						return symbol(ParserSym.TEXTO, yytext());
 	  				}
 {ALL_EQUAL}			{	return symbol(ParserSym.ALL_EQUAL, yytext());	}
@@ -169,7 +174,7 @@ CTE_REAL            =	{CTE}? {PUNTO} {DIGITO}*//[0]{0,1}[1-9]{0,11}[.][0-9]{0,11
 {ID}			    {
       					if(!esLongitudIDValida())
       						throw new InvalidLengthException("\"" + yytext() + "\""+ " excede el maximo permitido");
-		  				guardarToken(false);
+		  				guardarToken();
 		  				return symbol(ParserSym.ID, yytext());
 	  				}
 {MENOR_IGUAL}	    {	return symbol(ParserSym.MENOR_IGUAL, yytext());	}
