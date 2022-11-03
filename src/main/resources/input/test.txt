@@ -1,13 +1,14 @@
 init {
-    float a1, b1 = 99.9;
-    float c = 99.;
+    float a1, b1;
+    float c;
     float d;
     float minFloat, maxFloat;
     int i,j;
-    string p1, p2, p3 = "@sdADaSjfla%dfg";
+    string p1, p2, p3;
+    int a,b,z,o,w,e,f,g,h,p,u,var1;
 };
 
-i = j = 0;
+i = 0;
 
 printf("Ingrese un valor para la variable d: ");
 scanf(d);
@@ -32,7 +33,7 @@ while(i == j){
 
 printf(5);
 
-AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
+//AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
 
 //hola
 
@@ -65,32 +66,25 @@ do var1
 	default
 		printf("No se detecto");
 enddo
+do a
+    case a==101
+    	do b
+    		case b>300
+    			b = 100;
+    	enddo
+        b = 1001.656;
+        z = 500.66666;
+		o = 150.5;
+		o = "hola que tal como andan";
+    case a>202
+        a = b;
+    default
+        do b
+            case b>300
+            	b = 100;
+        enddo
+enddo
 
-/*
-if (a == b)
-{
-	variable = @; //DEBERIA FALLAR PORQUE NUESTRO LENGUAJE NO RECONOCE EL SIMBOLO @
-}
-*/
+AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
 
-//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE FLOAT
-//minFloat = 0.000000000000000000000000000000000000001;
-
-//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE FLOAT
-//maxFloat = 1000000000000000000000000000000000000001.0;
-
-//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE STRING
-//variableString = "Hola roberto, te estamos llamando, queremos jugar";
-
-//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE ENTERO POSITIVO
-//failPositiveInteger = 333000;
-
-//DEBERIA FALLAR PORQUE SE EXCEDE EL RANGO MAXIMO DE REPRESENTACION DE ENTERO NEGATIVO
-//failNegativeInteger = -333000;
-
-//DEBERIA FALLAR PORQUE SE EXCEDE EL LARGO MAXIMO PARA LOS ID'S
-/*
-init {
-	float abcdefghijklmnopqrstuvwxyzabcdefghij;
-}
-*/
+AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );

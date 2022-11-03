@@ -4,5 +4,5 @@ do a
 	case a>202
 		a = b;
 	default
-		printf("paso por default");
+		c = "default";
 enddo
