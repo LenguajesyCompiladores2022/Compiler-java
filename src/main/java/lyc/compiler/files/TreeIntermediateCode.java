@@ -18,7 +18,6 @@ public class TreeIntermediateCode {
 	}
 
 	public void crearHoja(String pointer,String value) {
-		System.out.println("aaa: " + value);
 		this.pointers.put(pointer,new Node(value));
 	}
 
