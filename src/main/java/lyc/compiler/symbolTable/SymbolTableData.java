@@ -13,7 +13,7 @@ public class SymbolTableData {
 
 	@Override
 	public String toString() {
-		return String.format("%20s|%20s|%20s", this.type, this.length, this.value);
+		return String.format("%30s|%30s|%30s", this.type, this.value, this.length);
 	}
 
 	public SymbolTableData(String type, String value, String length){
