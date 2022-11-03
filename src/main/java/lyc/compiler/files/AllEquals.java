@@ -26,7 +26,7 @@ public class AllEquals {
 		int tamArray = this.elementos.size() / this.cantArrays;
 		intermediateCode.crearHoja("AUX1ptr","@result");
 		intermediateCode.crearHoja("AUX2ptr","true");
-		intermediateCode.crearNodo(Pointers.Pptr,"=","AUX1ptr","AUX2ptr");
+		intermediateCode.crearNodo(Pointers.AEptr,"=","AUX1ptr","AUX2ptr");
 		intermediateCode.crearHoja("AUX2ptr","false");
 		intermediateCode.crearNodo("FALSEptr","=","AUX1ptr","AUX2ptr");
 
@@ -36,15 +36,14 @@ public class AllEquals {
 				intermediateCode.asignar("AUX3Ptr",this.elementos.get(numArray*tamArray+desp));
 				intermediateCode.asignar("AUX4Ptr",this.elementos.get((numArray+1)*tamArray+desp));
 				intermediateCode.crearNodo("COMPptr","!=","AUX3Ptr","AUX4Ptr");
-				intermediateCode.crearNodo("CUERPOptr","cuerpo","FALSEptr",Pointers.Pptr);
-				intermediateCode.crearNodo(Pointers.Pptr,"if","COMPptr","CUERPOptr");
+				intermediateCode.crearNodo("CUERPOptr","cuerpo","FALSEptr",Pointers.AEptr);
+				intermediateCode.crearNodo(Pointers.AEptr,"if","COMPptr","CUERPOptr");
 				numArray++;
 			}
 			desp++;
 		}
-
-		intermediateCode.asignar(Pointers.AEptr,Pointers.Pptr);
-
-		System.out.println("funciona?");
+		this.elementos.clear();
+		this.cantArrays = 0;
+		//intermediateCode.asignar(Pointers.AEptr,Pointers.Pptr);
 	}
 }
