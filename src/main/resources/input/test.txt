@@ -85,6 +85,6 @@ do a
         enddo
 enddo
 
-AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
+a = AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
 
 AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );

@@ -2,7 +2,7 @@ package lyc.compiler.constants;
 
 public class Pointers {
 	public static final String AUXptr = "AUXptr"; //Auxiliar
-	public static final String AUX2ptr = "AUXptr"; //Auxiliar2
+	public static final String AUX2ptr = "AUX2ptr"; //Auxiliar2
 	public static final String Fptr = "Fptr"; //Factor
 	public static final String Tptr = "Tptr"; //Termino
 	public static final String Eptr = "Eptr"; //Expresión

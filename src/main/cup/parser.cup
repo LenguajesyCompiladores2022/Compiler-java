@@ -15,6 +15,7 @@ parser code{:
 	private int cont = 0;
 	private String tipoDato;
 	private SymbolTableGenerator symbolTable = SymbolTableGenerator.getInstance();
+	private String id;
 :}
 // Terminals
 terminal NUMERAL;
@@ -118,14 +119,14 @@ sentencia 	::= 	iteracion 									{: intermediateCode.asignar(Pointers.Sptr,Poi
 sentencia	::= 	seleccion									{: intermediateCode.asignar(Pointers.Sptr,Pointers.SELptr); System.out.println("REGLA 6 -- sentencia <-- seleccion"); :};
 sentencia 	::=		printf										{: intermediateCode.asignar(Pointers.Sptr,"READptr"); System.out.println("REGLA 7 -- sentencia <-- printf"); :};
 sentencia	::=		scanf										{: intermediateCode.asignar(Pointers.Sptr,"WRITEptr"); System.out.println("REGLA 8 -- sentencia <-- scanf"); :};
-sentencia	::=		allEquals									{: intermediateCode.asignar(Pointers.Sptr,Pointers.AEptr); System.out.println("REGLA 9 -- sentencia <-- allEquals");:};
+sentencia	::=		allEquals PUNTO_COMA						{: intermediateCode.asignar(Pointers.Sptr,Pointers.AEptr); System.out.println("REGLA 9 -- sentencia <-- allEquals");:};
 sentencia	::=		doCase										{: intermediateCode.asignar(Pointers.Sptr,"DOCASEptr");:};
 
 asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
-asignacion	::= 	ID:id {:symbolTable.verifyType(id.toString());:} ASIGNACION ladoDerecho PUNTO_COMA {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,"LDptr"); System.out.println("REGLA 11 -- asignación"); :};
+asignacion	::= 	ID:_id {:symbolTable.verifyType(_id.toString()); id = _id.toString();:} ASIGNACION ladoDerecho PUNTO_COMA {: System.out.println("REGLA 11 -- asignación"); :};
 
-ladoDerecho ::= expresion {: intermediateCode.asignar("LDptr",Pointers.Eptr); :};
-ladoDerecho ::= allEquals {: intermediateCode.asignar("LDptr",Pointers.AEptr); :};
+ladoDerecho ::= expresion {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr);:};
+ladoDerecho ::= allEquals {: intermediateCode.crearHoja(Pointers.AUX2ptr,"@result"); intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.AUX2ptr); intermediateCode.crearNodo(Pointers.Aptr,"prog",Pointers.AEptr,Pointers.Aptr);:};
 //ladoIzquierdo::=	ladoIzquierdo ID ASIGNACION					{: System.out.println("REGLA 12 -- asignación"); :};
 //ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 13 -- asignación"); :};
 
@@ -166,7 +167,7 @@ printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: intermediateCode.crearNodo("READ
 
 scanf		::=		SYS_IN PA ID:id {: symbolTable.verifyType(id.toString()); :} PC PUNTO_COMA 	{: intermediateCode.crearHoja("IDptr",id.toString()); intermediateCode.crearNodo("WRITEptr","WRITE","IDptr",null); System.out.println("REGLA 35 -- scanf "); :};
 
-allEquals	::=		ALL_EQUAL PA parametros PC PUNTO_COMA {: allEquals.crearArbol(intermediateCode); System.out.println("REGLA 36 -- allEquals "); symbolTable.addToken("@result","int"); :};
+allEquals	::=		ALL_EQUAL PA parametros PC {: allEquals.crearArbol(intermediateCode); System.out.println("REGLA 36 -- allEquals "); symbolTable.addToken("@result","int"); :};
 parametros	::=		parametros COMA array			{: allEquals.incrementarCantArrays(); System.out.println("REGLA 37 -- parametros <-- parametros, array "); :};
 parametros	::=		array							{: allEquals.incrementarCantArrays(); System.out.println("REGLA 38 -- parametros <-- array "); :};
 array		::= 	CORCH_ABRE elementos CORCH_CIERRA {: System.out.println("REGLA 39 -- array <-- [elementos] "); :};
