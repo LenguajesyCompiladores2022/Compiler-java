@@ -114,7 +114,7 @@ programa	::= 	programa sentencia 							{: intermediateCode.crearNodo(Pointers.P
 programa	::= 	sentencia									{: intermediateCode.asignar(Pointers.Pptr,Pointers.Sptr); /*doCase.apilarCont(cont); cont = 1; doCase.apilarPrograma();*/ System.out.println("REGLA 2 -- programa <-- sentencia"); :};
 
 sentencia	::= 	asignacion 									{: intermediateCode.asignar(Pointers.Sptr,Pointers.Aptr); System.out.println("REGLA 3 -- sentencia <-- asignacion "); :};
-sentencia 	::= 	inicializacion								{: System.out.println("REGLA 4 -- sentencia <-- inicializacion"); :};
+sentencia 	::= 	inicializacion								{: intermediateCode.asignarNULL(Pointers.Sptr); System.out.println("REGLA 4 -- sentencia <-- inicializacion"); :};
 sentencia 	::= 	iteracion 									{: intermediateCode.asignar(Pointers.Sptr,Pointers.Iptr); System.out.println("REGLA 5 -- sentencia <-- iteracion"); :};
 sentencia	::= 	seleccion									{: intermediateCode.asignar(Pointers.Sptr,Pointers.SELptr); System.out.println("REGLA 6 -- sentencia <-- seleccion"); :};
 sentencia 	::=		printf										{: intermediateCode.asignar(Pointers.Sptr,"READptr"); System.out.println("REGLA 7 -- sentencia <-- printf"); :};
