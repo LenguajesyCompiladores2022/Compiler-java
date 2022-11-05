@@ -108,13 +108,13 @@ non terminal ladoDerecho;
 start with inicial;
 
 //programa	::= bloque {: System.out.println("REGLA 0 -- Programa"); :};
-inicial		::= 	{: intermediateCode.asignarNULL(Pointers.Pptr); :} programa	{:/*intermediateCode.asignar(Pointers.Iptr,Pointers.Pptr);*/ IntermediateCodeGenerator.getInstance().setIntermediateCode(intermediateCode);:};
+inicial		::= 	{: intermediateCode.asignarNULL(Pointers.Pptr); :} inicializacion programa	{:/*intermediateCode.asignar(Pointers.Iptr,Pointers.Pptr);*/ IntermediateCodeGenerator.getInstance().setIntermediateCode(intermediateCode);:};
 inicial		::=													;
 programa	::= 	programa sentencia 							{: intermediateCode.crearNodo(Pointers.Pptr,"prog",Pointers.Pptr,Pointers.Sptr); /*doCase.apilarPrograma(); cont++;*/ System.out.println("REGLA 1 -- programa <-- sentencia"); :};
 programa	::= 	sentencia									{: intermediateCode.asignar(Pointers.Pptr,Pointers.Sptr); /*doCase.apilarCont(cont); cont = 1; doCase.apilarPrograma();*/ System.out.println("REGLA 2 -- programa <-- sentencia"); :};
 
 sentencia	::= 	asignacion 									{: intermediateCode.asignar(Pointers.Sptr,Pointers.Aptr); System.out.println("REGLA 3 -- sentencia <-- asignacion "); :};
-sentencia 	::= 	inicializacion								{: intermediateCode.asignarNULL(Pointers.Sptr); System.out.println("REGLA 4 -- sentencia <-- inicializacion"); :};
+//sentencia 	::= 	inicializacion								{: System.out.println("REGLA 4 -- sentencia <-- inicializacion"); :};
 sentencia 	::= 	iteracion 									{: intermediateCode.asignar(Pointers.Sptr,Pointers.Iptr); System.out.println("REGLA 5 -- sentencia <-- iteracion"); :};
 sentencia	::= 	seleccion									{: intermediateCode.asignar(Pointers.Sptr,Pointers.SELptr); System.out.println("REGLA 6 -- sentencia <-- seleccion"); :};
 sentencia 	::=		printf										{: intermediateCode.asignar(Pointers.Sptr,"READptr"); System.out.println("REGLA 7 -- sentencia <-- printf"); :};
@@ -122,7 +122,7 @@ sentencia	::=		scanf										{: intermediateCode.asignar(Pointers.Sptr,"WRITEpt
 sentencia	::=		allEquals PUNTO_COMA						{: intermediateCode.asignar(Pointers.Sptr,Pointers.AEptr); System.out.println("REGLA 9 -- sentencia <-- allEquals");:};
 sentencia	::=		doCase										{: intermediateCode.asignar(Pointers.Sptr,"DOCASEptr");:};
 
-asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
+//asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
 asignacion	::= 	ID:_id {:symbolTable.verifyType(_id.toString()); id = _id.toString();:} ASIGNACION ladoDerecho PUNTO_COMA {: System.out.println("REGLA 11 -- asignación"); :};
 
 ladoDerecho ::= expresion {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr);:};
