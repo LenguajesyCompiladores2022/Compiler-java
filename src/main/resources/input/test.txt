@@ -102,10 +102,6 @@ do a
         enddo
 enddo
 
-init {
-    float kkk;
-};
-
 a = AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
 
 AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
