@@ -25,7 +25,7 @@ public class TreeIntermediateCode {
 
 		Node raiz = this.pointers.get(Pointers.Pptr);
 
-		return raiz == null ? "" : this.recorrerR(raiz);
+			return raiz == null ? "" : this.recorrerR(raiz);
 	}
 
 	private String recorrerR(Node nodo) {
