@@ -22,21 +22,21 @@ public class TreeIntermediateCode {
 	}
 
 	public String recorrer(){
-
+		String tabs = "";
 		Node raiz = this.pointers.get(Pointers.Pptr);
 
-			return raiz == null ? "" : this.recorrerR(raiz);
+			return raiz == null ? "" : this.recorrerR(raiz,"*",tabs);
 	}
 
-	private String recorrerR(Node nodo) {
+	private String recorrerR(Node nodo,String barra,String tabs) {
 		if(nodo.left == null && nodo.right == null)
-			return nodo.value + " ";
+			return tabs + barra + nodo.value + "\n";
 
 		String resParcial = "";
 
-		resParcial += nodo.left != null ? recorrerR(nodo.left) : "";
-		resParcial += nodo.value + " ";
-		return resParcial + (nodo.right != null ? recorrerR(nodo.right) : "");
+		resParcial += nodo.left != null ? recorrerR(nodo.left,"/",tabs+"\t") : "";
+		resParcial += tabs + barra + nodo.value + "\n";
+		return resParcial + (nodo.right != null ? recorrerR(nodo.right,"\\",tabs+"\t") : "");
 	}
 
 	public void crearNodo(String ptrResultado,String operador, String hijoIzq, String hijoDer){
