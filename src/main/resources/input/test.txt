@@ -67,7 +67,7 @@ do var1
 		printf("No se detecto");
 enddo
 do a
-    case a==101
+    case a==101 || a == 102
     	do b
     		case b>300
     			b = 100;
@@ -82,8 +82,29 @@ do a
         do b
             case b>300
             	b = 100;
+            	while(i == j){
+                	z = 100;
+                	if(c == d) {
+                		while(a == b){
+                        	z = "hola probando";
+                        	if(c == d) {
+                        		p = u;
+                        	}
+                        	else {
+                        		printf("caso else");
+                        	}
+                        }
+                		j = j + 1;
+                	}else{
+                		d = d + 1.0;
+                	}
+                }
         enddo
 enddo
+
+init {
+    float kkk;
+};
 
 a = AllEqual ( [a+w,b,c], [(d- 3)*2,e,f], [g,h,i] );
 
