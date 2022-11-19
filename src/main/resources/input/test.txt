@@ -8,9 +8,4 @@ init {
     int a,b,z,o,w,e,f,g,h,p,u,var1;
 };
 
-if(a1 > b1){
-	a = b;
-}
-else{
-	b = c;
-}
+a = (b+c)/a + 5/((( b*d )+ c)- 5);

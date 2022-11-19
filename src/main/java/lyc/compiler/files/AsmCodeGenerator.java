@@ -25,6 +25,13 @@ public class AsmCodeGenerator implements FileGenerator {
             Map.entry("<=","JNA"),
             Map.entry("<","JNAE"),
             Map.entry("!=","JNE"));
+
+    private Map<String,String> operadores = Map.ofEntries(
+            Map.entry("+","FADD"),
+            Map.entry("-","FSUB"),
+            Map.entry("*","FMUL"),
+            Map.entry("/","FDIV")
+    );
     public AsmCodeGenerator(Node intermediateCode) {
         this.cont = 0;
         this.ic = intermediateCode;
@@ -102,13 +109,52 @@ public class AsmCodeGenerator implements FileGenerator {
     public String generarAsignacion(Node nodo) {
         String asm_asig = "";
 
-        asm_asig += "FLD " + nodo.left.value + "\n";
-        asm_asig += "FSTP " + nodo.right.value + "\n";
+        asm_asig += this.generarExpresion(nodo.right);//"FLD " + nodo.left.value + "\n";
+        asm_asig += "FSTP " + nodo.left.value + "\n";
 
         return asm_asig;
     }
 
+    public String generarExpresion(Node nodo) {
+        String asm_exp = "";
+        int alturaIzquierda = altura(nodo.left);
+        int alturaDerecha = altura(nodo.right);
+        
+        if(esHoja(nodo)){
+            return "FLD " + nodo.value + "\n";
+        }
+
+        if(alturaIzquierda >= alturaDerecha) {
+            asm_exp += this.generarExpresion(nodo.left);
+            asm_exp += this.generarExpresion(nodo.right);
+        }
+        else{
+            asm_exp += this.generarExpresion(nodo.right);
+            asm_exp += this.generarExpresion(nodo.left);
+            asm_exp += "FXCH\n";
+        }
+        return asm_exp + operadores.get(nodo.value) + "\n" + "FFREE 0\n";
+    }
+
+    private boolean esHoja(Node nodo){
+        return nodo.left == null && nodo.right == null;
+    }
+
     public String generarEtiqueta() {
         return "etiq_" + cont++;
+    }
+
+    int altura(Node nodo)
+    {
+        if (nodo == null) {
+            return 0;
+        }
+        int izq = altura(nodo.left);
+        int der = altura(nodo.right);
+        if(izq > der){
+            return 1 + izq;
+        }else{
+            return 1 + der;
+        }
     }
 }
