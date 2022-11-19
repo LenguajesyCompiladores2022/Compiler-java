@@ -24,4 +24,8 @@ public class IntermediateCodeGenerator implements FileGenerator {
     public void generate(FileWriter fileWriter) throws IOException {
         fileWriter.write(this.intermediateCode.recorrer());
     }
+
+    public Node getIntermediateCode() {
+        return this.intermediateCode.getArbol();
+    }
 }

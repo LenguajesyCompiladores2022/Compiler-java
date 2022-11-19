@@ -107,4 +107,8 @@ public class TreeIntermediateCode {
 		}
 		this.desapilarNodo(Pointers.Pptr);
 	}
+
+	public Node getArbol(){
+		return this.pointers.get(Pointers.Pptr);
+	}
 }
