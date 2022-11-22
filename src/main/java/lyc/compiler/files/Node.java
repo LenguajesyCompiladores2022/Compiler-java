@@ -15,4 +15,8 @@ public class Node {
 		this.right = right;
 		this.left = left;
 	}
+
+	public boolean esHoja(){
+		return this.left == null && this.right == null;
+	}
 }
