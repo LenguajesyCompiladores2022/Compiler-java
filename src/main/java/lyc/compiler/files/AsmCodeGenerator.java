@@ -42,14 +42,16 @@ public class AsmCodeGenerator implements FileGenerator {
         fileWriter.write(this.recorrerPosOrden(this.ic));
     }
 
-    public String recorrerPosOrden(Node nodo) {
+    private String recorrerPosOrden(Node nodo) {
         String asm = "";
 
         if(nodo == null)
             return "";
 
-        if(nodo.value == "prog")
+        if(nodo.value == "prog"){
             this.recorrerPosOrden(nodo.left);
+            this.recorrerPosOrden(nodo.right);
+        }
         else if(nodo.value == "while")
                 generarWhile(nodo);
         else if(nodo.value == "if")
@@ -64,19 +66,44 @@ public class AsmCodeGenerator implements FileGenerator {
         System.out.println("Insertar etiqueta while_" + cont++);
     }
 
-    private String generarCondicion(Node nodo,String etiqueta) {
+    private String generarCondiciones(Node nodo,String etiqueta){
+        String asm_cond = "";
+        //String etiqueta = this.generarEtiqueta();
+        if(nodo.value.compareTo("||") == 0){
+            String etiquetaAux = this.generarEtiqueta();
+            asm_cond += this.generarCondicion(nodo.left,etiquetaAux,true);
+            asm_cond += this.generarCondicion(nodo.right,etiqueta,false);
+            asm_cond += etiquetaAux + ":" + "\n";
+        }
+        else if (nodo.value.compareTo("&&") == 0){
+            asm_cond += this.generarCondicion(nodo.left,etiqueta,false);
+            asm_cond += this.generarCondicion(nodo.right,etiqueta,false);
+        }
+        else {
+            asm_cond += this.generarCondicion(nodo,etiqueta,false);
+        }
+
+        return asm_cond;
+    }
+    private String generarCondicion(Node nodo,String etiqueta,boolean esOr) { //condiciones multiples
         String condicion = "";
         String salto;
 
-        if(nodo.value == "!"){
-            nodo = nodo.left;
+        if(esOr){
             salto = comparadoresNegados.get(nodo.value);
         }
         else {
             salto = comparadores.get(nodo.value);
         }
-        condicion += "FLD " + nodo.left.value + "\n";
-        condicion += "FLD " + nodo.right.value+ "\n";
+        /*if(nodo.value == "!"){
+            nodo = nodo.left;
+            salto = comparadoresNegados.get(nodo.value);
+        }
+        else {
+
+        }*/
+        condicion += this.generarExpresion(nodo.left);
+        condicion += this.generarExpresion(nodo.right);
         condicion += "FXCH\nFCOM\nFSTSW AX\nSAHF\n";
         condicion += salto + " " + etiqueta + "\n";
 
@@ -86,7 +113,7 @@ public class AsmCodeGenerator implements FileGenerator {
     private String generarIf(Node nodo) {
         String etiquetaIf = this.generarEtiqueta();
 
-        String asm_if = this.generarCondicion(nodo.left,etiquetaIf);
+        String asm_if = this.generarCondiciones(nodo.left,etiquetaIf);
 
         if(nodo.right.value == "cuerpo") {
 
@@ -106,7 +133,7 @@ public class AsmCodeGenerator implements FileGenerator {
         return asm_if;
     }
 
-    public String generarAsignacion(Node nodo) {
+    private String generarAsignacion(Node nodo) {
         String asm_asig = "";
 
         asm_asig += this.generarExpresion(nodo.right);//"FLD " + nodo.left.value + "\n";
@@ -115,11 +142,11 @@ public class AsmCodeGenerator implements FileGenerator {
         return asm_asig;
     }
 
-    public String generarExpresion(Node nodo) {
+    private String generarExpresion(Node nodo) {
         String asm_exp = "";
         int alturaIzquierda = altura(nodo.left);
         int alturaDerecha = altura(nodo.right);
-        
+
         if(esHoja(nodo)){
             return "FLD " + nodo.value + "\n";
         }
@@ -140,11 +167,11 @@ public class AsmCodeGenerator implements FileGenerator {
         return nodo.left == null && nodo.right == null;
     }
 
-    public String generarEtiqueta() {
+    private String generarEtiqueta() {
         return "etiq_" + cont++;
     }
 
-    int altura(Node nodo)
+    private int altura(Node nodo)
     {
         if (nodo == null) {
             return 0;
