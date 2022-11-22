@@ -147,7 +147,7 @@ public class AsmCodeGenerator implements FileGenerator {
         int alturaIzquierda = altura(nodo.left);
         int alturaDerecha = altura(nodo.right);
 
-        if(esHoja(nodo)){
+        if(nodo.esHoja()){
             return "FLD " + nodo.value + "\n";
         }
 
@@ -161,10 +161,6 @@ public class AsmCodeGenerator implements FileGenerator {
             asm_exp += "FXCH\n";
         }
         return asm_exp + operadores.get(nodo.value) + "\n" + "FFREE 0\n";
-    }
-
-    private boolean esHoja(Node nodo){
-        return nodo.left == null && nodo.right == null;
     }
 
     private String generarEtiqueta() {
