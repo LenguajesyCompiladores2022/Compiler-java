@@ -3,6 +3,7 @@ package lyc.compiler.files;
 import lyc.compiler.constants.Pointers;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class TreeIntermediateCode {
@@ -10,6 +11,17 @@ public class TreeIntermediateCode {
 	private Stack<String> pila;
 	private Stack<Node> pilaNodo;
 	private Stack<Node> pilaCondiciones;
+
+	private Map<String,String> comparadores = Map.ofEntries(
+			Map.entry("&&","||"),
+			Map.entry("||","&&"),
+			Map.entry("<",">="),
+			Map.entry(">","<="),
+			Map.entry(">=","<"),
+			Map.entry("<=",">"),
+			Map.entry("==","!="),
+			Map.entry("!=","==")
+			);
 	public TreeIntermediateCode() {
 		this.pointers = new HashMap<String,Node>();
 		this.pila = new Stack<String>();
@@ -110,5 +122,22 @@ public class TreeIntermediateCode {
 
 	public Node getArbol(){
 		return this.pointers.get(Pointers.Pptr);
+	}
+
+	public void invertir(String ptr) {
+		Node nodo = this.pointers.get(ptr);
+
+		this.invertirR(nodo);
+	}
+
+	private void invertirR(Node nodo){
+		if(nodo.esHoja())
+			return;
+		invertirR(nodo.left);
+		invertirR(nodo.right);
+		if(!this.comparadores.containsKey(nodo.value))
+			return;
+
+		nodo.value = this.comparadores.get(nodo.value);
 	}
 }
