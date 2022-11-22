@@ -152,8 +152,8 @@ condicion 	::= 	comparacion {: intermediateCode.apilarNodo(Pointers.COMPptr); :}
 condicion 	::= 	comparacion {: intermediateCode.apilarNodo(Pointers.COMPptr); :} OR:op comparacion  {: intermediateCode.desapilarNodo(Pointers.CONDptr); intermediateCode.crearNodo(Pointers.CONDptr,op.toString(),Pointers.CONDptr,Pointers.COMPptr); System.out.println("REGLA 27 -- condicion <-- condicion or comparacion"); :};
 condicion	::= 	comparacion 					{: intermediateCode.asignar(Pointers.CONDptr,Pointers.COMPptr); System.out.println("REGLA 28 -- condicion <-- comparacion"); :};
 //condicion	::= 	expresion 						{: System.out.println("REGLA 29 -- condicion <-- expresion"); :};
-condicion 	::=		NEGADO comparacion				{: intermediateCode.crearNodo(Pointers.CONDptr,"!",Pointers.COMPptr,null); System.out.println("REGLA 30 -- condicion <-- !comparacion");:};
-condicion	::= 	NEGADO expresion 				{: intermediateCode.crearNodo(Pointers.CONDptr,"!",Pointers.Eptr,null); System.out.println("REGLA 31 -- condicion <-- !expresion"); :};
+condicion 	::=		NEGADO condicion				{: intermediateCode.invertir(Pointers.CONDptr); /*intermediateCode.asignar(Pointers.CONDptr,Pointers.COMPptr);*/ System.out.println("REGLA 30 -- condicion <-- !comparacion");:};
+condicion	::= 	NEGADO expresion 				{: intermediateCode.crearHoja(Pointers.AUXptr,"0"); intermediateCode.crearNodo(Pointers.CONDptr,"==",Pointers.Eptr,Pointers.AUXptr); System.out.println("REGLA 31 -- condicion <-- !expresion"); :};
 
 comparacion ::= 	expresion {: intermediateCode.apilarNodo(Pointers.Eptr); :} comparador expresion {: intermediateCode.desapilarNodo(Pointers.COMPptr); intermediateCode.crearNodo(Pointers.COMPptr,intermediateCode.desapilar(),Pointers.COMPptr,Pointers.Eptr); System.out.println("REGLA 32 -- comparacion");:};
 comparador  ::= 	IGUAL_IGUAL:comp 				{: intermediateCode.apilar(comp.toString()); System.out.println("REGLA 33 -- CMP " + comp); :};
