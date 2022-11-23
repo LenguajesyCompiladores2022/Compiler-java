@@ -41,7 +41,7 @@ public class SymbolTableGenerator implements FileGenerator {
     public void addToken(String token,String dataType) {
         if(!this.symbols.containsKey(token)) {
             SymbolTableData data = new SymbolTableData(dataType,token,Integer.toString(token.length()-1));
-            this.symbols.put(token,data);
+            this.symbols.put("_" + token,data);
         }
     }
 
@@ -59,5 +59,14 @@ public class SymbolTableGenerator implements FileGenerator {
 
         if(data.getType() == null)
             throw new DeclarationException("Variable " + "\"" + id + "\"" + " sin declarar");
+    }
+
+    public String getType(String lexeme) {
+
+        return this.symbols.get(lexeme).getType();
+    }
+
+    public Map<String,SymbolTableData> getSymbols(){
+        return this.symbols;
     }
 }
