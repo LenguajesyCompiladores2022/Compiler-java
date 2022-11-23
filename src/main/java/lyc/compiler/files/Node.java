@@ -2,6 +2,8 @@ package lyc.compiler.files;
 
 public class Node {
 	String value;
+
+	String type;
 	Node left;
 	Node right;
 
@@ -9,6 +11,10 @@ public class Node {
 		this.value = value;
 		right = null;
 		left = null;
+	}
+	public Node(String value, String type){
+		this.value = value;
+		this.type = type;
 	}
 	public Node(String value, Node left, Node right){
 		this.value = value;
