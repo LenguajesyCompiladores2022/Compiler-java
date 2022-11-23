@@ -49,7 +49,7 @@ import java.util.Scanner;
 	}
 
 	private void guardarCTE(String dataType){
-	  	SymbolTableGenerator.getInstance().addToken("_" + yytext(),dataType);
+	  	SymbolTableGenerator.getInstance().addToken(yytext(),dataType);
 	}
 %}
 
