@@ -1,5 +1,9 @@
 package lyc.compiler.files;
 
+import java_cup.runtime.Symbol;
+import lyc.compiler.symbolTable.SymbolTableData;
+import lyc.compiler.symbolTable.SymbolTableGenerator;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,6 +13,8 @@ public class AsmCodeGenerator implements FileGenerator {
 
     private Node ic;
     private int cont;
+
+    private int MAX_TEXT_SIZE = 50;
 
     private Map<String,String> comparadores = Map.ofEntries(
         Map.entry("==","JNE"),
@@ -38,44 +44,115 @@ public class AsmCodeGenerator implements FileGenerator {
 
     }
     @Override
-    public void generate(FileWriter fileWriter) throws IOException {
-        fileWriter.write(this.recorrerPosOrden(this.ic));
+    public void generate(FileWriter fileWriter) throws Exception {
+        String asm = ".MODEL  LARGE\n.386\n.STACK 200h\n\n";
+        asm += generarDATA();
+        fileWriter.write(asm + generarCabecera() + generarPrograma(this.ic) + "\nmov ax, 4C00h\nint 21h\nEND START");
     }
 
-    private String recorrerPosOrden(Node nodo) {
+    public String generarCabecera(){
+        return ".CODE\nSTART:\nmov AX,@DATA\nmov DS,AX\nmov es,ax\n\n";
+    }
+
+    private String generarDATA(){
+        Map<String, SymbolTableData> symbols = SymbolTableGenerator.getInstance().getSymbols();
+        String asm_DATA = ".DATA\n";
+        for (Map.Entry<String, SymbolTableData> entry : symbols.entrySet()) {
+            SymbolTableData data = entry.getValue();
+            if(!data.getType().equals("string")){
+                asm_DATA += entry.getKey() + "\t" + "dd ";
+                if(data.getValue() == null)
+                    asm_DATA += "? \n";
+                else
+                    asm_DATA += data.getValue() + "\n";
+            }
+            else{
+                if(entry.getKey().startsWith("_")){
+                    int largo = this.MAX_TEXT_SIZE - Integer.valueOf(data.getLength());
+                    asm_DATA += entry.getKey() + "\t" + "db " + data.getValue() + ",'$'," + largo + " dup (?)\n";
+                }
+                else{
+                    asm_DATA += entry.getKey() + "\t" + "db " + MAX_TEXT_SIZE + " dup (?),'$'";
+                }
+            }
+        }
+
+        return asm_DATA + "\n";
+    }
+
+    private String generarPrograma(Node nodo) throws Exception {
         String asm = "";
 
         if(nodo == null)
             return "";
 
-        if(nodo.value == "prog"){
-            this.recorrerPosOrden(nodo.left);
-            this.recorrerPosOrden(nodo.right);
+        if(nodo.value.equals("prog")){
+            asm += this.generarPrograma(nodo.left);
+            asm += this.generarPrograma(nodo.right);
         }
-        else if(nodo.value == "while")
-                generarWhile(nodo);
-        else if(nodo.value == "if")
+        else if(nodo.value.equals("while"))
+                asm = generarWhile(nodo);
+        else if(nodo.value.equals("if"))
                 asm = generarIf(nodo);
-        else if(nodo.value == "=")
+        else if(nodo.value.equals("="))
                 asm = generarAsignacion(nodo);
+        else if(nodo.value.equals("READ"))
+                asm = generarPrintf(nodo);
+        else if(nodo.value.equals("WRITE"))
+                asm = generarScanf(nodo);
 
         return asm;
     }
 
-    private void generarWhile(Node nodo) {
-        System.out.println("Insertar etiqueta while_" + cont++);
+    private String generarPrintf(Node node){
+        String asm_printf = "";
+
+        if(node.left.type.equals("int"))
+            asm_printf = "DisplayInteger ";
+        else if(node.left.type.equals("float"))
+            asm_printf = "DisplayFloat ";
+        else if(node.left.type.equals("string"))
+            asm_printf = "DisplayString ";
+
+        return asm_printf + node.left.value + "\n";
+    }
+    private String generarScanf(Node node){
+        String asm_scanf = "";
+
+        if(node.left.type.equals("int"))
+            asm_scanf = "GetInteger ";
+        else if(node.left.type.equals("float"))
+            asm_scanf = "GetFloat ";
+        else if(node.left.type.equals("string"))
+            asm_scanf = "GetString ";
+
+        return asm_scanf + node.left.value + "\n";
     }
 
-    private String generarCondiciones(Node nodo,String etiqueta){
+    private String generarWhile(Node nodo) throws Exception {
+        String  asm_while = "";
+        String etiquetaCondicion = this.generarEtiqueta();
+        String etiquetaIncondicional = this.generarEtiqueta();
+
+        asm_while += etiquetaIncondicional + ":\n";
+        asm_while += this.generarCondiciones(nodo.left,etiquetaCondicion);
+        asm_while += this.generarPrograma(nodo.right);
+        asm_while += "JMP " + etiquetaIncondicional + "\n";
+        asm_while += etiquetaCondicion + ":\n";
+
+        return asm_while;
+    }
+
+    private String generarCondiciones(Node nodo,String etiqueta) throws Exception {
         String asm_cond = "";
         //String etiqueta = this.generarEtiqueta();
-        if(nodo.value.compareTo("||") == 0){
+        if(nodo.value.equals("||")){
             String etiquetaAux = this.generarEtiqueta();
             asm_cond += this.generarCondicion(nodo.left,etiquetaAux,true);
             asm_cond += this.generarCondicion(nodo.right,etiqueta,false);
             asm_cond += etiquetaAux + ":" + "\n";
         }
-        else if (nodo.value.compareTo("&&") == 0){
+        else if (nodo.value.equals("&&")){
             asm_cond += this.generarCondicion(nodo.left,etiqueta,false);
             asm_cond += this.generarCondicion(nodo.right,etiqueta,false);
         }
@@ -85,7 +162,7 @@ public class AsmCodeGenerator implements FileGenerator {
 
         return asm_cond;
     }
-    private String generarCondicion(Node nodo,String etiqueta,boolean esOr) { //condiciones multiples
+    private String generarCondicion(Node nodo,String etiqueta,boolean esOr) throws Exception { //condiciones multiples
         String condicion = "";
         String salto;
 
@@ -110,39 +187,42 @@ public class AsmCodeGenerator implements FileGenerator {
         return condicion;
     }
 
-    private String generarIf(Node nodo) {
+    private String generarIf(Node nodo) throws Exception {
         String etiquetaIf = this.generarEtiqueta();
 
         String asm_if = this.generarCondiciones(nodo.left,etiquetaIf);
 
-        if(nodo.right.value == "cuerpo") {
+        if(nodo.right.value.equals("cuerpo")) {
 
-            asm_if += this.recorrerPosOrden(nodo.right.left);
+            asm_if += this.generarPrograma(nodo.right.left);
 
             String etiquetaElse = this.generarEtiqueta();
             asm_if += "JMP " + etiquetaElse + "\n";
             asm_if += etiquetaIf + ":" + "\n";
-            asm_if += this.recorrerPosOrden(nodo.right.right);
+            asm_if += this.generarPrograma(nodo.right.right);
             asm_if += etiquetaElse + ":" + "\n";
         }
         else{
-            asm_if += this.recorrerPosOrden(nodo.right);
+            asm_if += this.generarPrograma(nodo.right);
             asm_if += etiquetaIf + ":" + "\n";
         }
 
         return asm_if;
     }
 
-    private String generarAsignacion(Node nodo) {
+    private String generarAsignacion(Node nodo) throws Exception {
         String asm_asig = "";
 
         asm_asig += this.generarExpresion(nodo.right);//"FLD " + nodo.left.value + "\n";
+        if(!nodo.left.type.equals(nodo.right.type))
+            throw new Exception("\""+ nodo.left.value + "\"" + " es incompatible con el tipo de la expresion");
+
         asm_asig += "FSTP " + nodo.left.value + "\n";
 
         return asm_asig;
     }
 
-    private String generarExpresion(Node nodo) {
+    private String generarExpresion(Node nodo) throws Exception {
         String asm_exp = "";
         int alturaIzquierda = altura(nodo.left);
         int alturaDerecha = altura(nodo.right);
@@ -160,6 +240,10 @@ public class AsmCodeGenerator implements FileGenerator {
             asm_exp += this.generarExpresion(nodo.left);
             asm_exp += "FXCH\n";
         }
+        if(!nodo.left.type.equals(nodo.right.type))
+            throw new Exception("\""+ nodo.left.value + "\" y " + "\"" + nodo.right.value + "\"" + " son tipos incompatibles");
+        nodo.type = nodo.left.type;
+
         return asm_exp + operadores.get(nodo.value) + "\n" + "FFREE 0\n";
     }
 
