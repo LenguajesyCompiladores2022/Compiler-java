@@ -125,7 +125,7 @@ sentencia	::=		doCase										{: intermediateCode.asignar(Pointers.Sptr,"DOCASE
 //asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
 asignacion	::= 	ID:_id {:symbolTable.verifyType(_id.toString()); id = _id.toString();:} ASIGNACION ladoDerecho PUNTO_COMA {: System.out.println("REGLA 11 -- asignación"); :};
 
-ladoDerecho ::= expresion {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr);:};
+ladoDerecho ::= expresion {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString(),symbolTable.getType(id.toString())); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr);:};
 ladoDerecho ::= allEquals {: intermediateCode.crearHoja(Pointers.AUX2ptr,"@result"); intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.AUX2ptr); intermediateCode.crearNodo(Pointers.Aptr,"prog",Pointers.AEptr,Pointers.Aptr);:};
 //ladoIzquierdo::=	ladoIzquierdo ID ASIGNACION					{: System.out.println("REGLA 12 -- asignación"); :};
 //ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 13 -- asignación"); :};
@@ -165,7 +165,7 @@ comparador  ::= 	MENOR:comp						{: intermediateCode.apilar(comp.toString()); Sy
 
 printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: intermediateCode.crearNodo("READptr","READ",Pointers.Fptr,null); System.out.println("REGLA 34 -- printf "); :};
 
-scanf		::=		SYS_IN PA ID:id {: symbolTable.verifyType(id.toString()); :} PC PUNTO_COMA 	{: intermediateCode.crearHoja("IDptr",id.toString()); intermediateCode.crearNodo("WRITEptr","WRITE","IDptr",null); System.out.println("REGLA 35 -- scanf "); :};
+scanf		::=		SYS_IN PA ID:id {: symbolTable.verifyType(id.toString()); :} PC PUNTO_COMA 	{: intermediateCode.crearHoja("IDptr",id.toString(),symbolTable.getType(id.toString())); intermediateCode.crearNodo("WRITEptr","WRITE","IDptr",null); System.out.println("REGLA 35 -- scanf "); :};
 
 allEquals	::=		ALL_EQUAL PA parametros PC {: allEquals.crearArbol(intermediateCode); System.out.println("REGLA 36 -- allEquals "); symbolTable.addToken("@result","int"); :};
 parametros	::=		parametros COMA array			{: allEquals.incrementarCantArrays(); System.out.println("REGLA 37 -- parametros <-- parametros, array "); :};
@@ -188,8 +188,8 @@ termino		::= 	termino {:intermediateCode.apilarNodo(Pointers.Tptr);:}OP_MUL:op f
 termino		::= 	termino {:intermediateCode.apilarNodo(Pointers.Tptr);:}OP_DIV:op factor {: intermediateCode.desapilarNodo(Pointers.Tptr); intermediateCode.crearNodo(Pointers.Tptr,op.toString(),Pointers.Tptr,Pointers.Fptr); System.out.println("REGLA 51 -- /"); :};
 termino		::= 	factor 							{: intermediateCode.asignar(Pointers.Tptr,Pointers.Fptr); System.out.println("REGLA 52 -- Termino <-- factor"); :};
 
-factor		::= 	ID:id  							{: intermediateCode.crearHoja(Pointers.Fptr,id.toString()); symbolTable.verifyType(id.toString()); System.out.println("REGLA 53 -- Id: " + id); :};
-factor		::= 	CTE:constant 					{: intermediateCode.crearHoja(Pointers.Fptr,constant.toString()); System.out.println("REGLA 54 -- constante entera: " + constant ); :};
-factor		::= 	TEXTO:string 					{: intermediateCode.crearHoja(Pointers.Fptr,string.toString()); 			  System.out.println("REGLA 55 -- constante TEXTO: " + string ); :};
-factor		::=		CTE_REAL:cteReal				{: intermediateCode.crearHoja(Pointers.Fptr,cteReal.toString());  System.out.println("REGLA 56 -- constante real: " + cteReal ); :};
+factor		::= 	ID:id  							{: symbolTable.verifyType(id.toString()); intermediateCode.crearHoja(Pointers.Fptr,id.toString(),symbolTable.getType(id.toString()));  System.out.println("REGLA 53 -- Id: " + id); :};
+factor		::= 	CTE:constant 					{: intermediateCode.crearHoja(Pointers.Fptr,"_" + constant.toString(),symbolTable.getType("_" + constant.toString())); System.out.println("REGLA 54 -- constante entera: " + constant ); :};
+factor		::= 	TEXTO:string 					{: intermediateCode.crearHoja(Pointers.Fptr,"_" + string.toString(),symbolTable.getType("_" + string.toString()));   System.out.println("REGLA 55 -- constante TEXTO: " + string ); :};
+factor		::=		CTE_REAL:cteReal				{: intermediateCode.crearHoja(Pointers.Fptr,"_" + cteReal.toString(),symbolTable.getType("_" + cteReal.toString()));  System.out.println("REGLA 56 -- constante real: " + cteReal ); :};
 factor		::= 	PA expresion PC 				{: intermediateCode.asignar(Pointers.Fptr,Pointers.Eptr); System.out.println(" REGLA 57 -- Factor <-- (expresion)"); :};

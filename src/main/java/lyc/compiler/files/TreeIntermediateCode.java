@@ -33,6 +33,10 @@ public class TreeIntermediateCode {
 		this.pointers.put(pointer,new Node(value));
 	}
 
+	public void crearHoja(String pointer,String value,String tipo) {
+		this.pointers.put(pointer,new Node(value,tipo));
+	}
+
 	public String recorrer(){
 		String tabs = "";
 		Node raiz = this.pointers.get(Pointers.Pptr);
