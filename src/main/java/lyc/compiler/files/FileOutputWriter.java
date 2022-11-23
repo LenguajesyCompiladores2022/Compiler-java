@@ -12,14 +12,11 @@ public final class FileOutputWriter {
 
     private FileOutputWriter(){}
 
-    public static void writeOutput(String fileName, FileGenerator fileGenerator) {
+    public static void writeOutput(String fileName, FileGenerator fileGenerator) throws Exception {
         createOutputDirectory();
-      try(FileWriter fileWriter = new FileWriter("%s/%s".formatted(OUTPUT_DIRECTORY, fileName))) {
-          fileGenerator.generate(fileWriter);
-          fileWriter.flush();
-      } catch (IOException e) {
-          System.err.println("Error trying to create file " + e.getMessage());
-      }
+        FileWriter fileWriter = new FileWriter("%s/%s".formatted(OUTPUT_DIRECTORY, fileName));
+        fileGenerator.generate(fileWriter);
+        fileWriter.flush();
     }
 
     private static void createOutputDirectory() {
