@@ -45,7 +45,7 @@ public class AsmCodeGenerator implements FileGenerator {
     }
     @Override
     public void generate(FileWriter fileWriter) throws Exception {
-        String asm = ".MODEL  LARGE\n.386\n.STACK 200h\n\n";
+        String asm = "include macros2.asm\ninclude number.asm\n .MODEL  LARGE\n.386\n.STACK 200h\n\n";
         asm += generarDATA();
         fileWriter.write(asm + generarCabecera() + generarPrograma(this.ic) + "\nmov ax, 4C00h\nint 21h\nEND START");
     }
@@ -60,19 +60,25 @@ public class AsmCodeGenerator implements FileGenerator {
         for (Map.Entry<String, SymbolTableData> entry : symbols.entrySet()) {
             SymbolTableData data = entry.getValue();
             if(!data.getType().equals("string")){
-                asm_DATA += entry.getKey() + "\t" + "dd ";
+                asm_DATA += entry.getKey().replace(".","_") + "\t" + "dd ";
                 if(data.getValue() == null)
                     asm_DATA += "? \n";
-                else
-                    asm_DATA += data.getValue() + "\n";
+                else{
+                    String value = "";
+                    if(data.getType().equals("int"))
+                        value = data.getValue() + ".0";
+                    else
+                        value = data.getValue();
+                    asm_DATA += value + "\n";
+                }
             }
             else{
                 if(entry.getKey().startsWith("_")){
                     int largo = this.MAX_TEXT_SIZE - Integer.valueOf(data.getLength());
-                    asm_DATA += entry.getKey() + "\t" + "db " + data.getValue() + ",'$'," + largo + " dup (?)\n";
+                    asm_DATA += entry.getKey().replaceAll("[^a-zA-z]*","") + "\t" + "db " + data.getValue() + ",'$'," + largo + " dup (?)\n";
                 }
                 else{
-                    asm_DATA += entry.getKey() + "\t" + "db " + MAX_TEXT_SIZE + " dup (?),'$'";
+                    asm_DATA += entry.getKey().replaceAll("[^a-zA-z]*","") + "\t" + "db " + MAX_TEXT_SIZE + " dup (?),'$'\n";
                 }
             }
         }
@@ -107,21 +113,17 @@ public class AsmCodeGenerator implements FileGenerator {
     private String generarPrintf(Node node){
         String asm_printf = "";
 
-        if(node.left.type.equals("int"))
-            asm_printf = "DisplayInteger ";
-        else if(node.left.type.equals("float"))
-            asm_printf = "DisplayFloat ";
+        if(node.left.type.equals("float") || node.left.type.equals("int"))
+            asm_printf = "DisplayFloat " + node.left.value + ",2\n";
         else if(node.left.type.equals("string"))
-            asm_printf = "DisplayString ";
+            asm_printf = "DisplayString "+ node.left.value.replaceAll("[^a-zA-z]*","") + "\n";
 
-        return asm_printf + node.left.value + "\n";
+        return asm_printf + "newline 1\n";
     }
     private String generarScanf(Node node){
         String asm_scanf = "";
 
-        if(node.left.type.equals("int"))
-            asm_scanf = "GetInteger ";
-        else if(node.left.type.equals("float"))
+        if(node.left.type.equals("float") || node.left.type.equals("int"))
             asm_scanf = "GetFloat ";
         else if(node.left.type.equals("string"))
             asm_scanf = "GetString ";
@@ -228,7 +230,7 @@ public class AsmCodeGenerator implements FileGenerator {
         int alturaDerecha = altura(nodo.right);
 
         if(nodo.esHoja()){
-            return "FLD " + nodo.value + "\n";
+            return "FLD " + nodo.value.replace(".","_") + "\n";
         }
 
         if(alturaIzquierda >= alturaDerecha) {
@@ -244,7 +246,7 @@ public class AsmCodeGenerator implements FileGenerator {
             throw new Exception("\""+ nodo.left.value + "\" y " + "\"" + nodo.right.value + "\"" + " son tipos incompatibles");
         nodo.type = nodo.left.type;
 
-        return asm_exp + operadores.get(nodo.value) + "\n" + "FFREE 0\n";
+        return asm_exp + operadores.get(nodo.value) + "\n";
     }
 
     private String generarEtiqueta() {

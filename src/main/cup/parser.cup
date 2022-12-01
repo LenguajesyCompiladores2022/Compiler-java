@@ -125,8 +125,8 @@ sentencia	::=		doCase										{: intermediateCode.asignar(Pointers.Sptr,"DOCASE
 //asignacion	::= 	tipoDato ladoIzquierdo expresion PUNTO_COMA {: System.out.println("REGLA 10 -- asignación con tipo de dato"); :};
 asignacion	::= 	ID:_id {:symbolTable.verifyType(_id.toString()); id = _id.toString();:} ASIGNACION ladoDerecho PUNTO_COMA {: System.out.println("REGLA 11 -- asignación"); :};
 
-ladoDerecho ::= expresion {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString(),symbolTable.getType(id.toString())); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr);:};
-ladoDerecho ::= allEquals {: intermediateCode.crearHoja(Pointers.AUX2ptr,"@result"); intermediateCode.crearHoja(Pointers.AUXptr,id.toString()); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.AUX2ptr); intermediateCode.crearNodo(Pointers.Aptr,"prog",Pointers.AEptr,Pointers.Aptr);:};
+ladoDerecho ::= expresion {: intermediateCode.crearHoja(Pointers.AUXptr,id.toString(),symbolTable.getType(id.toString())); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.Eptr); :};
+ladoDerecho ::= allEquals {: intermediateCode.crearHoja(Pointers.AUX2ptr,"@result","int"); intermediateCode.crearHoja(Pointers.AUXptr,id.toString(),symbolTable.getType(id.toString())); intermediateCode.crearNodo(Pointers.Aptr,"=",Pointers.AUXptr,Pointers.AUX2ptr); intermediateCode.crearNodo(Pointers.Aptr,"prog",Pointers.AEptr,Pointers.Aptr);:};
 //ladoIzquierdo::=	ladoIzquierdo ID ASIGNACION					{: System.out.println("REGLA 12 -- asignación"); :};
 //ladoIzquierdo::=	ID ASIGNACION								{: System.out.println("REGLA 13 -- asignación"); :};
 
@@ -167,7 +167,7 @@ printf		::=		SYS_OUT PA factor PC PUNTO_COMA {: intermediateCode.crearNodo("READ
 
 scanf		::=		SYS_IN PA ID:id {: symbolTable.verifyType(id.toString()); :} PC PUNTO_COMA 	{: intermediateCode.crearHoja("IDptr",id.toString(),symbolTable.getType(id.toString())); intermediateCode.crearNodo("WRITEptr","WRITE","IDptr",null); System.out.println("REGLA 35 -- scanf "); :};
 
-allEquals	::=		ALL_EQUAL PA parametros PC {: allEquals.crearArbol(intermediateCode); System.out.println("REGLA 36 -- allEquals "); symbolTable.addToken("@result","int"); :};
+allEquals	::=		ALL_EQUAL PA parametros PC {: allEquals.crearArbol(intermediateCode); System.out.println("REGLA 36 -- allEquals "); symbolTable.addToken("1.0","float"); symbolTable.addToken("0.0","float"); symbolTable.addInternalVariable("@result","float");:};
 parametros	::=		parametros COMA array			{: allEquals.incrementarCantArrays(); System.out.println("REGLA 37 -- parametros <-- parametros, array "); :};
 parametros	::=		array							{: allEquals.incrementarCantArrays(); System.out.println("REGLA 38 -- parametros <-- array "); :};
 array		::= 	CORCH_ABRE elementos CORCH_CIERRA {: System.out.println("REGLA 39 -- array <-- [elementos] "); :};

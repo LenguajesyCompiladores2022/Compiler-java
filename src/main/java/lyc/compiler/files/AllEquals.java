@@ -24,10 +24,10 @@ public class AllEquals {
 		int numArray = 0;
 		int desp = 0;
 		int tamArray = this.elementos.size() / this.cantArrays;
-		intermediateCode.crearHoja("AUX1ptr","@result");
-		intermediateCode.crearHoja("AUX2ptr","true");
+		intermediateCode.crearHoja("AUX1ptr","@result", "float");
+		intermediateCode.crearHoja("AUX2ptr","_1_0","float");
 		intermediateCode.crearNodo(Pointers.AEptr,"=","AUX1ptr","AUX2ptr");
-		intermediateCode.crearHoja("AUX2ptr","false");
+		intermediateCode.crearHoja("AUX2ptr","_0_0","float");
 		intermediateCode.crearNodo("FALSEptr","=","AUX1ptr","AUX2ptr");
 
 		while(desp < tamArray) {
