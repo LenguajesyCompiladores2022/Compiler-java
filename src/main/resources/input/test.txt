@@ -32,3 +32,12 @@ while(i < 10){
 i = 5;
 a = AllEqual([i],[b],[c]);
 printf(a);
+
+do a
+	case a == 100
+		printf("a es 100");
+	case a == 103
+		printf("a es 103");
+	default
+		printf("a no es ni 100 ni 103");
+enddo

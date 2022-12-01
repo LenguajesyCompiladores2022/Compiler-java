@@ -75,10 +75,10 @@ public class AsmCodeGenerator implements FileGenerator {
             else{
                 if(entry.getKey().startsWith("_")){
                     int largo = this.MAX_TEXT_SIZE - Integer.valueOf(data.getLength());
-                    asm_DATA += entry.getKey().replaceAll("[^a-zA-z]*","") + "\t" + "db " + data.getValue() + ",'$'," + largo + " dup (?)\n";
+                    asm_DATA += entry.getKey().replaceAll("[^a-zA-z0-9]*","") + "\t" + "db " + data.getValue() + ",'$'," + largo + " dup (?)\n";
                 }
                 else{
-                    asm_DATA += entry.getKey().replaceAll("[^a-zA-z]*","") + "\t" + "db " + MAX_TEXT_SIZE + " dup (?),'$'\n";
+                    asm_DATA += entry.getKey().replaceAll("[^a-zA-z0-9]*","") + "\t" + "db " + MAX_TEXT_SIZE + " dup (?),'$'\n";
                 }
             }
         }
@@ -116,7 +116,7 @@ public class AsmCodeGenerator implements FileGenerator {
         if(node.left.type.equals("float") || node.left.type.equals("int"))
             asm_printf = "DisplayFloat " + node.left.value + ",2\n";
         else if(node.left.type.equals("string"))
-            asm_printf = "DisplayString "+ node.left.value.replaceAll("[^a-zA-z]*","") + "\n";
+            asm_printf = "DisplayString "+ node.left.value.replaceAll("[^a-zA-z0-9]*","") + "\n";
 
         return asm_printf + "newline 1\n";
     }
