@@ -12,7 +12,7 @@ a = (a * b) + (b * c);
 
 printf(a);
 
-
+//allequals que da falso
 a = AllEqual([a],[b],[c]);
 printf(a);
 
@@ -29,6 +29,7 @@ while(i < 10){
 	i = i + 1;
 }
 
+//allequals que da true
 i = 5;
 a = AllEqual([i],[b],[c]);
 printf(a);
